@@ -1,10 +1,12 @@
+// app/page.tsx
 "use client";
 
-import React from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Search,
-  MapPin,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
@@ -15,14 +17,88 @@ import {
   CreditCard,
 } from "lucide-react";
 
-export default function Home() {
+// Local Imports
+import { destinations as allRestaurants } from "@/lib/data/destinations";
+import Header from "@/components/Header";
+
+export default function Index() {
+  const golden = "#BC995D";
+  const router = useRouter();
+
+  // Header state (passed to Header component)
+  const [lang, setLang] = useState<"EN" | "BG">("EN");
+
+  // Booking box state
+  const uniqueLocations = useMemo(
+    () => Array.from(new Set(allRestaurants.map((r) => r.location))),
+    []
+  );
+  const defaultLoc = uniqueLocations.includes("Sofia")
+    ? "Sofia"
+    : uniqueLocations[0] ?? "Adelaide";
+  const [loc, setLoc] = useState(defaultLoc);
+  const [date, setDate] = useState<string>(
+    new Date().toISOString().slice(0, 10)
+  );
+  const [guests, setGuests] = useState<number>(2);
+
+  // Carousel Logic
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const [auto, setAuto] = useState(true);
+  const CARD_W = 340;
   const restaurantImages = [
     "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80",
     "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&q=80",
     "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80",
     "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=80",
+    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80",
   ];
 
+  function scrollNext() {
+    const el = sliderRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    if (el.scrollLeft + CARD_W >= max) {
+      el.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      el.scrollBy({ left: CARD_W, behavior: "smooth" });
+    }
+  }
+  function scrollPrev() {
+    const el = sliderRef.current;
+    if (!el) return;
+    if (el.scrollLeft <= 0) {
+      el.scrollTo({ left: el.scrollWidth - el.clientWidth, behavior: "auto" });
+    } else {
+      el.scrollBy({ left: -CARD_W, behavior: "smooth" });
+    }
+  }
+  useEffect(() => {
+    if (!auto) return;
+    const id = setInterval(scrollNext, 4000);
+    return () => clearInterval(id);
+  }, [auto, scrollNext]);
+
+  // Global keyboard navigation (Left/Right arrows), ignoring form fields
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      const tag = t?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "select" || tag === "textarea") return;
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        scrollNext();
+      }
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        scrollPrev();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [scrollNext, scrollPrev]);
+
+  // Data Definitions (kept local as they are small and page-specific)
   const timeCategories = [
     {
       name: "Breakfast",
@@ -79,89 +155,36 @@ export default function Home() {
     "Frequently Asked Question here, Question 7",
   ];
 
-  const topRestaurants = {
-    "Top Booked": [
-      {
-        image:
-          "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&q=80",
-        name: "La Trattoria",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1578474846511-04ba529f0b88?w=200&q=80",
-        name: "The Grill House",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=200&q=80",
-        name: "Ocean's Catch",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=200&q=80",
-        name: "The Brunch Club",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=200&q=80",
-        name: "Spice Route",
-      },
-    ],
-    Trending: [
-      {
-        image:
-          "https://images.unsplash.com/photo-1498654896293-37a11aa421d4?w=200&q=80",
-        name: "The Noodle Bar",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1506354666786-959d6d497f1a?w=200&q=80",
-        name: "Pizza Palace",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=200&q=80",
-        name: "The Pancake House",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=200&q=80",
-        name: "Salad Sensations",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=80",
-        name: "Vegan Vibes",
-      },
-    ],
-    New: [
-      {
-        image:
-          "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=200&q=80",
-        name: "The Corner Bistro",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=200&q=80",
-        name: "Morning Bites",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1473093226795-af9932fe5856?w=200&q=80",
-        name: "Pasta Perfect",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=200&q=80",
-        name: "Sweet Dreams Desserts",
-      },
-      {
-        image:
-          "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=200&q=80",
-        name: "Steakhouse Supreme",
-      },
-    ],
-  };
+  const howItWorksSteps = [
+    {
+      icon: Search,
+      title: "Discover Venues",
+      desc: "Browse our curated selection of premium venues in your city",
+    },
+    {
+      icon: CalendarDays,
+      title: "Book Your Slot",
+      desc: "Choose your preferred date and time slot with instant availability",
+    },
+    {
+      icon: CheckCircle,
+      title: "Confirmation",
+      desc: "Choose your preferred date and time slot with instant availability",
+    },
+    {
+      icon: CreditCard,
+      title: "Secure Payment",
+      desc: "Pay securely with Stripe, Apple Pay, or Google Pay",
+    },
+  ];
+
+  function onSearch() {
+    router.push(
+      `/search?loc=${encodeURIComponent(loc)}&date=${encodeURIComponent(
+        date
+      )}&guests=${guests}`
+    );
+  }
 
   return (
     <div
@@ -179,84 +202,13 @@ export default function Home() {
             "linear-gradient(0deg, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.62) 100%), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=2000&q=80')",
         }}
       >
-        {/* Header/Navigation */}
-        <header className="absolute top-0 left-0 right-0 z-10">
-          <div className="max-w-[1440px] mx-auto px-14 py-6 flex justify-between items-center">
-            {/* Logo */}
-            {/* <div className="flex-shrink-0">
-              <Image src="" alt="Logo" width={140} height={44} />
-            </div> */}
-
-            <div className="flex items-center gap-x-4">
-              {/* Location Selector */}
-              <div className="flex items-center gap-2 border border-white/50 rounded-full px-4 py-1.5 bg-black/20 backdrop-blur-sm">
-                <MapPin className="w-5 h-5 text-white" />
-                <div>
-                  <p className="text-xs text-white/70 leading-none">Location</p>
-                  <p className="text-sm font-medium text-white leading-none">
-                    Sofia
-                  </p>
-                </div>
-              </div>
-
-              {/* Search Bar */}
-              <div className="flex items-center gap-2 border border-white/50 rounded-full px-4 py-2.5 bg-black/20 backdrop-blur-sm w-72">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="bg-transparent text-white placeholder-white/80 outline-none w-full text-sm"
-                />
-                <Search className="w-5 h-5 text-white" />
-              </div>
-
-              {/* Language Toggle */}
-              <div className="flex items-center border border-white/50 rounded-full p-1 bg-black/20 backdrop-blur-sm">
-                <button className="px-3 py-1 rounded-full bg-golden text-black text-sm font-semibold">
-                  EN
-                </button>
-                <button className="px-3 py-1 text-white text-sm">BG</button>
-              </div>
-
-              {/* Navigation Links */}
-              <nav className="flex items-center gap-6 pl-4">
-                <a
-                  href="#"
-                  className="text-white text-sm font-medium hover:text-golden transition-colors"
-                >
-                  Restaurants
-                </a>
-                <a
-                  href="#"
-                  className="text-white text-sm font-medium hover:text-golden transition-colors"
-                >
-                  Bars
-                </a>
-                <a
-                  href="#"
-                  className="text-white/70 text-sm font-medium hover:text-golden transition-colors"
-                >
-                  Clubs
-                </a>
-                <a
-                  href="#"
-                  className="text-white text-sm font-medium hover:text-golden transition-colors"
-                >
-                  Favourites
-                </a>
-              </nav>
-
-              {/* Register Button */}
-              <button className="ml-4 px-8 py-3 rounded-md bg-[#BC995D] text-white text-sm font-medium shadow-lg hover:bg-opacity-90 transition-colors">
-                Register
-              </button>
-            </div>
-          </div>
-        </header>
+        {/* Header/Navigation: Using the dedicated component */}
+        <Header lang={lang} setLang={setLang} />
 
         {/* Hero Content */}
-        <div className="max-w-[1440px] mx-auto px-14 flex flex-col items-center justify-center pt-52 pb-20">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-14 flex flex-col items-center justify-center pt-24 lg:pt-32 pb-16 lg:pb-20">
           <div className="text-center max-w-[514px] mb-10">
-            <h1 className="font-dm-sans text-6xl font-light leading-[111%] tracking-tight text-white mb-4">
+            <h1 className="font-dm-sans text-4xl md:text-6xl font-light leading-[111%] tracking-tight text-white mb-4">
               Premium Venues Await Your Booking
             </h1>
             <p className="text-white text-base font-medium max-w-[448px] mx-auto">
@@ -265,44 +217,67 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Booking Form */}
-          <div className="w-full max-w-[664px] p-8 rounded-2xl border border-white bg-gradient-to-b from-[rgba(33,60,98,0.55)] to-[rgba(0,0,0,0.55)] shadow-md backdrop-blur-md">
+          {/* Booking Form - functional */}
+          <div className="w-full max-w-[664px] p-6 md:p-8 rounded-2xl border border-white bg-gradient-to-b from-[rgba(33,60,98,0.55)] to-[rgba(0,0,0,0.55)] shadow-md backdrop-blur-md">
             <h3 className="text-white text-base font-medium mb-4">
               Book a Table
             </h3>
-            <div className="flex flex-wrap items-end gap-10">
-              <div className="flex-1 min-w-[100px]">
+            <div className="flex flex-wrap items-end gap-6 md:gap-10">
+              <div className="flex-1 min-w-[140px]">
                 <label className="text-white/50 text-xs mb-1 block">
                   Location
                 </label>
-                <div className="flex items-center gap-2">
-                  <span className="text-white text-base font-medium">
-                    Seville
-                  </span>
-                  <ChevronDown className="w-5 h-5 text-white" />
+                <div className="relative">
+                  <select
+                    value={loc}
+                    onChange={(e) => setLoc(e.target.value)}
+                    className="w-full appearance-none bg-transparent text-white border border-white/40 rounded-md px-3 py-2 pr-8"
+                  >
+                    {uniqueLocations.map((c) => (
+                      <option key={c} value={c} className="text-black">
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
-              <div className="h-7 w-px bg-white/50"></div>
-              <div className="flex-1 min-w-[120px]">
+              <div className="h-7 w-px bg-white/30 hidden md:block"></div>
+              <div className="flex-1 min-w-[140px]">
                 <label className="text-white/50 text-xs mb-1 block">Date</label>
-                <div className="flex items-center gap-2">
-                  <span className="text-white text-base font-medium">
-                    05-10-2025
-                  </span>
-                  <ChevronDown className="w-5 h-5 text-white" />
-                </div>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full bg-transparent text-white border border-white/40 rounded-md px-3 py-2"
+                  style={{ colorScheme: "dark" }}
+                />
               </div>
-              <div className="h-7 w-px bg-white/50"></div>
-              <div className="flex-1 min-w-[80px]">
+              <div className="h-7 w-px bg-white/30 hidden md:block"></div>
+              <div className="flex-1 min-w-[120px]">
                 <label className="text-white/50 text-xs mb-1 block">
                   Guests
                 </label>
-                <div className="flex items-center gap-2">
-                  <span className="text-white text-base font-medium">07</span>
-                  <ChevronDown className="w-5 h-5 text-white" />
+                <div className="relative">
+                  <select
+                    value={guests}
+                    onChange={(e) => setGuests(parseInt(e.target.value))}
+                    className="w-full appearance-none bg-transparent text-white border border-white/40 rounded-md px-3 py-2 pr-8"
+                  >
+                    {Array.from({ length: 12 }).map((_, i) => (
+                      <option key={i + 1} value={i + 1} className="text-black">
+                        {String(i + 1).padStart(2, "0")}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
-              <button className="px-12 py-3.5 rounded-md bg-golden text-white text-sm font-medium text-center">
+              <button
+                onClick={onSearch}
+                className={`px-10 md:px-12 py-3.5 rounded-md text-white text-sm font-medium text-center`}
+                style={{ backgroundColor: golden }}
+              >
                 Search
               </button>
             </div>
@@ -311,15 +286,10 @@ export default function Home() {
       </div>
 
       {/* What's Your Best Dine Time */}
-      <section className="max-w-[1440px] mx-auto px-14 py-10">
-        <div className="flex justify-between items-center mb-10">
-          <h2 className="text-[34px] font-normal">
-            What's Your Best Dine Time!
-          </h2>
-          <a href="#" className="text-white/75 text-xl font-medium">
-            View all
-          </a>
-        </div>
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-14 py-10">
+        <h2 className="text-[34px] font-normal mb-10">
+          What's Your Best Dine Time!
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {timeCategories.map((category, index) => (
             <div
@@ -345,18 +315,29 @@ export default function Home() {
 
       {/* Restaurant Carousel Section */}
       <section className="max-w-[1440px] mx-auto py-10">
-        <div className="px-16 flex justify-between items-end mb-6">
+        <div className="px-6 lg:px-16 flex justify-between items-end mb-6">
           <h2 className="text-[34px] font-normal">
             Book for dinner tonight in Adelaide
           </h2>
-          <a href="#" className="text-white/75 text-xl font-medium">
+          <Link href="#" className="text-white/75 text-xl font-medium">
             View all
-          </a>
+          </Link>
         </div>
 
         <div className="relative">
           <div className="overflow-hidden">
-            <div className="flex gap-8 px-16 py-5">
+            <div
+              ref={sliderRef}
+              tabIndex={0}
+              onMouseEnter={() => setAuto(false)}
+              onMouseLeave={() => setAuto(true)}
+              onKeyDown={(e) => {
+                if (e.key === "ArrowRight") scrollNext();
+                if (e.key === "ArrowLeft") scrollPrev();
+              }}
+              className="flex gap-8 px-6 lg:px-16 py-5 transition-transform scroll-smooth overflow-x-auto scrollbar-hide"
+              style={{ scrollSnapType: "x mandatory" }}
+            >
               {restaurantImages.map((img, index) => (
                 <div
                   key={index}
@@ -365,6 +346,7 @@ export default function Home() {
                     backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, rgba(0, 0, 0, 0.80) 100%), url('${img}')`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
+                    scrollSnapAlign: "start",
                   }}
                 >
                   <div className="h-full p-4 flex flex-col justify-end">
@@ -386,17 +368,25 @@ export default function Home() {
           </div>
 
           {/* Navigation Arrows */}
-          <button className="absolute left-7 top-1/2 -translate-y-1/2 w-[50px] h-[50px] rounded-full border border-white bg-gradient-to-b from-[rgba(0,0,0,0.57)] to-[rgba(33,60,98,0.57)] backdrop-blur-[44px] flex items-center justify-center">
+          <button
+            aria-label="Previous"
+            onClick={scrollPrev}
+            className="absolute left-7 top-1/2 -translate-y-1/2 w-[50px] h-[50px] rounded-full border border-white bg-gradient-to-b from-[rgba(0,0,0,0.57)] to-[rgba(33,60,98,0.57)] backdrop-blur-[44px] flex items-center justify-center"
+          >
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
-          <button className="absolute right-7 top-1/2 -translate-y-1/2 w-[50px] h-[50px] rounded-full border border-white bg-white/10 backdrop-blur-[7.5px] flex items-center justify-center">
+          <button
+            aria-label="Next"
+            onClick={scrollNext}
+            className="absolute right-7 top-1/2 -translate-y-1/2 w-[50px] h-[50px] rounded-full border border-white bg-white/10 backdrop-blur-[7.5px] flex items-center justify-center"
+          >
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="max-w-[1440px] mx-auto px-14 py-10">
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-14 py-10">
         <div className="mb-8">
           <h2 className="text-[34px] font-normal mb-2">How it works</h2>
           <p className="text-white/80 text-base font-medium">
@@ -405,33 +395,12 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            {
-              icon: Search,
-              title: "Discover Venues",
-              desc: "Browse our curated selection of premium venues in your city",
-            },
-            {
-              icon: CalendarDays,
-              title: "Book Your Slot",
-              desc: "Choose your preferred date and time slot with instant availability",
-            },
-            {
-              icon: CheckCircle,
-              title: "Confirmation",
-              desc: "Choose your preferred date and time slot with instant availability",
-            },
-            {
-              icon: CreditCard,
-              title: "Secure Payment",
-              desc: "Pay securely with Stripe, Apple Pay, or Google Pay",
-            },
-          ].map((step, index) => (
+          {howItWorksSteps.map((step, index) => (
             <div
               key={index}
               className="p-8 rounded-xl border-2 border-white flex flex-col gap-2"
             >
-              <step.icon className="w-7 h-7 text-golden mb-2" />
+              <step.icon className={`w-7 h-7 mb-2`} style={{ color: golden }} />
               <h3 className="text-white text-xl font-medium">{step.title}</h3>
               <p className="text-white text-xs">{step.desc}</p>
             </div>
@@ -440,7 +409,7 @@ export default function Home() {
       </section>
 
       {/* Top Restaurant This Week */}
-      <section className="max-w-[1440px] mx-auto px-14 py-10">
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-14 py-10">
         <div className="mb-10">
           <h2 className="text-[34px] font-normal mb-2">
             Top Restaurant This Week
@@ -452,14 +421,16 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-          {Object.entries(topRestaurants).map(([title, restaurants]) => (
-            <div key={title} className="flex flex-col gap-3">
-              <h3 className="text-white text-xl font-medium mb-2">{title}</h3>
-              {restaurants.map((item, index) => (
-                <div key={item.name}>
+          {[1, 2, 3].map((col) => (
+            <div key={col} className="flex flex-col gap-3">
+              <h3 className="text-white text-xl font-medium mb-2">
+                Top Booked
+              </h3>
+              {[1, 2, 3, 4, 5].map((item) => (
+                <div key={item}>
                   <div className="flex items-center gap-5 pr-4">
                     <Image
-                      src={item.image}
+                      src={`https://images.unsplash.com/photo-1517248135467 + ${item}?w=200&q=80`}
                       alt="Restaurant"
                       width={92}
                       height={92}
@@ -467,35 +438,33 @@ export default function Home() {
                     />
                     <div className="flex-1">
                       <h4 className="text-white text-xl font-medium mb-2">
-                        {item.name}
+                        La coco
                       </h4>
-                      <p className="text-white/40 text-xs mb-3">
+                      <p className="text-white/60 text-sm mb-3">
                         Italian $$ • Street Name
                       </p>
-                      <div className="inline-flex items-center px-2 py-0.5 rounded bg-[#125604]">
+                      <div className="inline-flex items-center px-2 py-0.5 rounded bg-[#125604] w-fit">
                         <span className="text-[#5F5] text-sm font-medium">
                           4.2
                         </span>
                       </div>
                     </div>
-                    <Bookmark className="w-5 h-5 text-light-white" />
+                    <Bookmark className="w-5 h-5 text-white" />
                   </div>
-                  {index < restaurants.length - 1 && (
-                    <div className="h-px bg-[#7A7A7A] my-3"></div>
-                  )}
+                  {item < 5 && <div className="h-px bg-[#7A7A7A] my-3"></div>}
                 </div>
               ))}
-              <a href="#" className="text-light-white text-xs">
+              <Link href="#" className="text-white text-xs">
                 View all
-              </a>
+              </Link>
             </div>
           ))}
         </div>
       </section>
 
       {/* Latest Reviews */}
-      <section className="max-w-[1440px] mx-auto px-16 py-10">
-        <h2 className="text-[34px] font-normal text-light-white mb-12">
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-16 py-10">
+        <h2 className="text-[34px] font-normal text-white mb-12">
           Latest reviews
         </h2>
 
@@ -509,16 +478,17 @@ export default function Home() {
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
-                    className="w-5 h-5 text-golden fill-golden"
-                    strokeWidth={1}
+                    className={`w-5 h-5 text-[${golden}] fill-[${golden}]`}
+                    strokeWidth={2}
+                    style={{ color: golden, fill: golden }}
                   />
                 ))}
               </div>
               <div>
-                <h3 className="text-light-white text-2xl font-bold mb-1">
+                <h3 className="text-white text-2xl font-bold mb-1">
                   Review title
                 </h3>
-                <p className="text-light-white text-base">Review body</p>
+                <p className="text-white text-base">Review body</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-full bg-gray-400"></div>
@@ -554,7 +524,10 @@ export default function Home() {
             placeholder="Enter your preferences (e.g., 'romantic Italian with a view')"
             className="flex-grow bg-transparent border border-white rounded-md p-3 text-white placeholder-white/50"
           />
-          <button className="px-8 py-3.5 rounded-md bg-golden text-white text-sm font-medium">
+          <button
+            className={`px-8 py-3.5 rounded-md text-white text-sm font-medium`}
+            style={{ backgroundColor: golden }}
+          >
             Get Suggestion
           </button>
         </div>
@@ -564,9 +537,9 @@ export default function Home() {
       <section className="max-w-[1440px] mx-auto py-10">
         <div className="px-16 flex justify-between items-end mb-6">
           <h2 className="text-[34px] font-normal">Discover Cuisines</h2>
-          <a href="#" className="text-white/75 text-xl font-medium">
+          <Link href="#" className="text-white/75 text-xl font-medium">
             View all
-          </a>
+          </Link>
         </div>
 
         <div className="relative">
@@ -601,9 +574,9 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="max-w-[1440px] mx-auto px-14 py-10">
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-14 py-10">
         <div className="mb-12">
-          <h2 className="text-light-white text-[34px] font-normal mb-2">FAQ</h2>
+          <h2 className="text-white text-[34px] font-normal mb-2">FAQ</h2>
           <p className="text-white/75 text-base font-medium">
             You Got Questions, We Got Answers
           </p>
@@ -639,7 +612,10 @@ export default function Home() {
             placeholder="Enter your email"
             className="flex-grow bg-transparent border border-white rounded-md p-3 text-white placeholder-white/50"
           />
-          <button className="px-8 py-3.5 rounded-md bg-golden text-white text-sm font-medium">
+          <button
+            className={`px-8 py-3.5 rounded-md text-white text-sm font-medium`}
+            style={{ backgroundColor: golden }}
+          >
             Subscribe
           </button>
         </div>
@@ -647,7 +623,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-white bg-gradient-to-b from-[#213C62] to-black">
-        <div className="max-w-[1440px] mx-auto px-16 py-12">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-16 py-12">
           <div className="flex justify-between mb-12">
             {/* Social Links */}
             <div className="flex flex-col gap-6 min-w-[262px]">
@@ -675,44 +651,44 @@ export default function Home() {
                 </h3>
                 <ul className="space-y-3">
                   <li>
-                    <a
+                    <Link
                       href="#"
-                      className="text-light-white text-base hover:text-golden transition"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
                     >
                       About Us
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
-                      className="text-light-white text-base hover:text-golden transition"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
                     >
                       Blogs
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
-                      className="text-light-white text-base hover:text-golden transition"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
                     >
                       Careers
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
-                      className="text-light-white text-base hover:text-golden transition"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
                     >
                       Press
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
-                      className="text-light-white text-base hover:text-golden transition"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
                     >
                       Contact us
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -723,28 +699,28 @@ export default function Home() {
                 </h3>
                 <ul className="space-y-3">
                   <li>
-                    <a
+                    <Link
                       href="#"
-                      className="text-light-white text-base hover:text-golden transition"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
                     >
                       Restaurants
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
-                      className="text-light-white text-base hover:text-golden transition"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
                     >
                       Reviews
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
-                      className="text-light-white text-base hover:text-golden transition"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
                     >
                       Near me
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -755,28 +731,44 @@ export default function Home() {
                 </h3>
                 <ul className="space-y-3">
                   <li>
-                    <a
+                    <Link
+                      href="/Login"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
+                    >
+                      Login
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/Register"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
+                    >
+                      Register
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
                       href="#"
-                      className="text-light-white text-base hover:text-golden transition"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
                     >
                       Saves
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
-                      className="text-light-white text-base hover:text-golden transition"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
                     >
                       Bookings
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
-                      className="text-light-white text-base hover:text-golden transition"
+                      className="text-light-white text-base hover:text-[#BC995D] transition"
                     >
                       Restaurant management
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -803,24 +795,24 @@ export default function Home() {
               © 2025 TableBird. All rights reserved.
             </p>
             <div className="flex gap-8">
-              <a
+              <Link
                 href="#"
-                className="text-white text-sm hover:text-golden transition"
+                className="text-white text-sm hover:text-[#BC995D] transition"
               >
                 Privacy Policy
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
-                className="text-white text-sm hover:text-golden transition"
+                className="text-white text-sm hover:text-[#BC995D] transition"
               >
                 Terms of service
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
-                className="text-white text-sm hover:text-golden transition"
+                className="text-white text-sm hover:text-[#BC995D] transition"
               >
                 Cookie policy
-              </a>
+              </Link>
             </div>
           </div>
         </div>
