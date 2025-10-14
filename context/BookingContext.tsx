@@ -2,7 +2,22 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import { Destination } from "@/lib/data/destinations"; // Assuming Destination interface is exported from data file
+// Destination interface is defined here to be self-contained
+interface Destination {
+  id: string;
+  image: string;
+  title: string;
+  location: string;
+  rating: number;
+  reviews: number;
+  price: number;
+  duration: string;
+  featured?: boolean;
+  description: string;
+  amenities: string[];
+  included: string[];
+  category: string;
+}
 
 interface BookingData {
   destination: Destination | null;
@@ -17,7 +32,7 @@ interface User {
   name: string;
   email: string;
   avatar?: string;
-  type?: "customer" | "venue-manager" | "admin";
+  type?: 'customer' | 'venue-manager' | 'admin';
   restaurantName?: string;
 }
 
@@ -48,9 +63,8 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     name: "Admin Alice",
     email: "admin@tablebird.com",
     type: "admin", // <-- Change to 'venue-manager' or 'customer' for testing
-    avatar:
-      "https://images.unsplash.com/photo-1617818247016-50e017f99305?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXN0b21lciUyMGZhY2V8ZW58MXx8fHwxNzU5OTQ2NzI5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-    restaurantName: "La Trattoria",
+    avatar: 'https://images.unsplash.com/photo-1617818247016-50e017f99305?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxjdXN0b21lciUyMGZhY2V8ZW58MXx8fHwxNzU5OTQ2NzI5fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    restaurantName: "La Trattoria"
   });
   const [userBookings, setUserBookings] = useState<any[]>([]);
 

@@ -3,10 +3,21 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Star, Heart } from "lucide-react";
+import { MapPin, Star, Heart, Calendar } from "lucide-react";
 import React from "react";
-import { Destination } from "@/lib/data/destinations";
-import { Badge } from "@/components/ui/badge"; // Assuming you have the Badge component
+// Interface should be pulled from your lib/data/destinations.ts file
+interface Destination {
+  id: string;
+  image: string;
+  title: string;
+  location: string;
+  rating: number;
+  reviews: number;
+  price: number;
+  duration: string;
+  featured?: boolean;
+  category: string;
+}
 
 interface DestinationCardProps {
   destination: Destination;
@@ -16,7 +27,7 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
   const golden = "#D4A853";
 
   return (
-    <div className="bg-[#1A2E4C] rounded-xl overflow-hidden shadow-lg transform transition duration-300 hover:scale-[1.02]">
+    <div className="bg-[#1A2E4C] rounded-xl overflow-hidden shadow-lg transform transition duration-300 hover:scale-[1.02] group cursor-pointer">
       <Link href={`/destination/${destination.id}`}>
         <div className="relative h-48 w-full">
           <Image
@@ -27,20 +38,20 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
             className="object-cover"
           />
           {destination.featured && (
-            <Badge
-              className="absolute top-3 left-3 text-[#0A1E3C]"
+            <span
+              className="absolute top-3 left-3 text-[#0A1E3C] px-3 py-1 rounded-full text-xs font-medium"
               style={{ backgroundColor: golden, color: "#0A1E3C" }}
             >
               Featured
-            </Badge>
+            </span>
           )}
           <button className="absolute top-3 right-3 p-2 bg-black/50 rounded-full hover:bg-black/70">
             <Heart className="h-5 w-5 text-white" />
           </button>
         </div>
       </Link>
-      <div className="p-4">
-        <div className="flex justify-between items-start mb-2">
+      <div className="p-4 space-y-3">
+        <div className="flex items-start justify-between mb-2">
           <h3 className="text-xl font-semibold text-white truncate w-4/5">
             <Link
               href={`/destination/${destination.id}`}
@@ -53,19 +64,38 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
             ${destination.price}
           </div>
         </div>
-        <div className="flex items-center text-gray-400 text-sm mb-3">
-          <MapPin className="h-4 w-4 mr-1" />
+
+        <div className="flex items-center gap-2 text-gray-400 text-sm">
+          <MapPin className="h-4 w-4" />
           <span>{destination.location}</span>
         </div>
-        <div className="flex justify-between items-center text-sm">
-          <div className="flex items-center gap-1" style={{ color: golden }}>
-            <Star className="h-4 w-4 fill-current" />
-            <span className="font-semibold">{destination.rating}</span>
-            <span className="text-gray-400">
-              ({destination.reviews} reviews)
-            </span>
+
+        <div className="flex items-center gap-2 text-gray-400 text-sm">
+          <Calendar className="h-4 w-4" />
+          <span>{destination.duration}</span>
+        </div>
+
+        <div className="space-y-3">
+          <div className="text-gray-400 text-sm">
+            ({destination.reviews} reviews)
           </div>
-          <span className="text-gray-400">{destination.duration}</span>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-gray-400 text-sm">From</span>
+              <div className="text-[#D4A853] text-xl" style={{ color: golden }}>
+                ${destination.price}
+              </div>
+            </div>
+            <Link href={`/destination/${destination.id}`}>
+              <button
+                className="bg-[#D4A853] hover:bg-[#C9A961] text-[#0A1E3C] px-6 py-2 rounded-lg transition"
+                style={{ backgroundColor: golden, color: "#0A1E3C" }}
+              >
+                Book Now
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

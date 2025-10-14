@@ -1,38 +1,50 @@
 // app/booking/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useBooking } from "@/context/BookingContext";
-import { Button } from "@/components/ui/button";
-import { Calendar as CalComponent } from "@/components/ui/calendar"; // Renamed import
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Label } from "@/components/ui/label";
-import { Calendar as CalendarIcon, Users, Bed, ArrowLeft } from "lucide-react";
-import { format } from "date-fns";
+  MapPin,
+  Calendar,
+  Clock,
+  Users,
+  ChevronDown,
+  Phone,
+  Mail,
+  Timer,
+  Check,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header"; // Assuming you reuse Header/Navigation
+import Image from "next/image";
 
 export default function BookingPage() {
   const router = useRouter();
   const { bookingData, setBookingData, user } = useBooking();
-  const [checkIn, setCheckIn] = useState<Date | undefined>(
-    bookingData.checkIn || undefined
-  );
-  const [checkOut, setCheckOut] = useState<Date | undefined>(
-    bookingData.checkOut || undefined
-  );
-  const [guests, setGuests] = useState(bookingData.guests);
-  const [rooms, setRooms] = useState(bookingData.rooms);
   const golden = "#D4A853";
+  const [selectedSeating, setSelectedSeating] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState("+49 125 456 3");
+  const [occasion, setOccasion] = useState("");
+  const [specialRequest, setSpecialRequest] = useState("");
+  const [emailOffers, setEmailOffers] = useState(false);
+  const [openTableOffers, setOpenTableOffers] = useState(false);
+  const [textUpdates, setTextUpdates] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(292); // 4:52 in seconds
 
   useEffect(() => {
-    // Redirect if no destination selected
+    // If user has navigated directly here without selecting a destination, redirect.
     if (!bookingData.destination) {
       router.push("/");
     }
+
+    // Timer setup
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
   }, [bookingData.destination, router]);
 
   if (!bookingData.destination) {
@@ -40,206 +52,307 @@ export default function BookingPage() {
   }
 
   const destination = bookingData.destination;
+  const currentYear = new Date().getFullYear();
 
-  const calculateTotalPrice = () => {
-    if (!checkIn || !checkOut) return 0;
-    // Calculate nights using date-fns
-    const diffTime = checkOut.getTime() - checkIn.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    const nights = Math.max(1, diffDays);
-    return destination.price * guests * nights;
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const totalPrice = calculateTotalPrice();
+  const seatingOptions = [
+    { id: "standard", label: "Standard" },
+    { id: "outdoor", label: "Outdoor" },
+    { id: "rooftop", label: "Rooftop" },
+    { id: "bar-lounge", label: "Bar lounge" },
+  ];
 
-  const handleContinue = () => {
-    if (!checkIn || !checkOut || totalPrice <= 0) {
-      alert("Please select valid check-in and check-out dates");
+  const handleCompleteBooking = () => {
+    if (!selectedSeating) {
+      alert("Please select a seating option");
       return;
     }
 
-    setBookingData({
-      checkIn,
-      checkOut,
-      guests,
-      rooms,
-      totalPrice,
-    });
+    // Update booking context with final details before moving to Confirmation
+    const finalBookingDetails = {
+      ...bookingData,
+      seating: selectedSeating,
+      occasion,
+      specialRequest,
+      // Mock final total (if not already calculated from a date range)
+      totalPrice: 50,
+    };
 
-    if (!user) {
-      router.push("/login"); // Redirect to login if not authenticated
-    } else {
-      router.push("/checkout");
-    }
+    // MOCK: Add to user bookings to show in confirmation page
+    const mockBooking = {
+      id: Date.now().toString(),
+      destination,
+      checkIn: new Date(),
+      checkOut: new Date(),
+      guests: 2,
+      rooms: 1,
+      totalPrice: 50,
+      status: "Confirmed",
+    };
+
+    setBookingData(finalBookingDetails);
+    // In a real app, this would be `addBooking(mockBooking)`
+    router.push("/confirmation"); // 5. Go to confirmation page
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-16">
-      {/* Back Button adaptation */}
-      <Button
-        variant="ghost"
-        className="text-gray-400 hover:text-white mb-6 md:mb-8"
-        onClick={() => router.back()}
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back
-      </Button>
+    <div className="min-h-screen bg-[#0E1A2B] relative overflow-hidden">
+      {/* Background (kept for UI consistency) */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(20.62% 53.89% at 100% 76.15%, #064194 0%, rgba(14, 26, 43, 0.00) 100%)`,
+        }}
+      />
 
-      <h1 className="text-2xl md:text-3xl text-white mb-6 md:mb-8">
-        Complete Your Booking
-      </h1>
-      {/* ... (Rest of the component content) */}
+      <div className="relative z-10">
+        <Header lang="EN" setLang={() => {}} />
 
-      {/* Date and Guest Selection adapted to Next.js */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-[#1A2E4C] rounded-lg p-6">
-            <h2 className="text-xl text-white mb-6">Trip Details</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Check-in Date */}
-              <div>
-                <Label className="text-gray-300 mb-2">Check-in Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left bg-[#0A1E3C] border-gray-600 text-white hover:bg-[#1A2E4C] hover:text-white"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {checkIn ? format(checkIn, "PPP") : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-[#1A2E4C] border-gray-600">
-                    <CalComponent
-                      mode="single"
-                      selected={checkIn}
-                      onSelect={setCheckIn}
-                      disabled={(date) => date < new Date()}
-                      className="text-white"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Check-out Date */}
-              {/* ... (The rest of the date/guest selectors are also adapted with proper component imports and state hooks) ... */}
-              {/* Check-out Date */}
-              <div>
-                <Label className="text-gray-300 mb-2">Check-out Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left bg-[#0A1E3C] border-gray-600 text-white hover:bg-[#1A2E4C] hover:text-white"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {checkOut ? format(checkOut, "PPP") : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-[#1A2E4C] border-gray-600">
-                    <CalComponent
-                      mode="single"
-                      selected={checkOut}
-                      onSelect={setCheckOut}
-                      disabled={(date) => !checkIn || date <= checkIn}
-                      className="text-white"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Guests */}
-              <div>
-                <Label className="text-gray-300 mb-2">Number of Guests</Label>
-                <div className="flex items-center gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="bg-[#0A1E3C] border-gray-600 text-white hover:bg-[#1A2E4C] hover:text-white"
-                    onClick={() => setGuests(Math.max(1, guests - 1))}
-                  >
-                    -
-                  </Button>
-                  <div className="flex-1 bg-[#0A1E3C] border border-gray-600 rounded-md px-4 py-2 text-white text-center flex items-center justify-center gap-2">
-                    <Users className="h-4 w-4" />
-                    {guests}
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="bg-[#0A1E3C] border-gray-600 text-white hover:bg-[#1A2E4C] hover:text-white"
-                    onClick={() => setGuests(guests + 1)}
-                  >
-                    +
-                  </Button>
-                </div>
-              </div>
-
-              {/* Rooms */}
-              <div>
-                <Label className="text-gray-300 mb-2">Number of Rooms</Label>
-                <div className="flex items-center gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="bg-[#0A1E3C] border-gray-600 text-white hover:bg-[#1A2E4C] hover:text-white"
-                    onClick={() => setRooms(Math.max(1, rooms - 1))}
-                  >
-                    -
-                  </Button>
-                  <div className="flex-1 bg-[#0A1E3C] border border-gray-600 rounded-md px-4 py-2 text-white text-center flex items-center justify-center gap-2">
-                    <Bed className="h-4 w-4" />
-                    {rooms}
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="bg-[#0A1E3C] border-gray-600 text-white hover:bg-[#1A2E4C] hover:text-white"
-                    onClick={() => setRooms(rooms + 1)}
-                  >
-                    +
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Booking Summary */}
-        <div className="lg:col-span-1">
-          <div className="bg-[#1A2E4C] rounded-lg p-6 sticky top-6">
-            <h2 className="text-xl text-white mb-4">Booking Summary</h2>
-
-            <div className="mb-6">
-              <div className="w-full h-40 relative">
-                <ImageWithFallback
-                  src={destination.image}
+        {/* Main Content */}
+        <main className="max-w-[1320px] mx-auto px-4 lg:px-[60px] mt-8 lg:mt-12">
+          <div className="grid lg:grid-cols-[1fr_auto] gap-8 lg:gap-12">
+            {/* Left Column */}
+            <div className="space-y-6">
+              {/* Restaurant Info */}
+              <div className="flex items-center gap-5">
+                <Image
+                  src={destination.image} // Use dynamic image
                   alt={destination.title}
-                  className="object-cover rounded-lg"
+                  width={92}
+                  height={92}
+                  className="w-[92px] h-[92px] rounded-xl object-cover"
                 />
+                <div className="flex-1 space-y-3">
+                  <h1 className="text-white text-[34px] font-normal tracking-[0.085px]">
+                    {destination.title}
+                  </h1>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-5 h-5 text-white" />
+                      <span className="text-white text-sm tracking-[0.035px]">
+                        Today
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-5 h-5 text-white" />
+                      <span className="text-white text-sm tracking-[0.035px] opacity-90">
+                        19:00
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Users className="w-5 h-5 text-white" />
+                      <span className="text-white text-sm tracking-[0.035px]">
+                        {bookingData.guests} people
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-white mb-1 mt-4">{destination.title}</h3>
-              <p className="text-gray-400 text-sm">{destination.location}</p>
-            </div>
 
-            <div className="border-t border-gray-600 pt-4 mb-6">
-              <div className="flex justify-between text-xl pt-4">
-                <span className="text-white">Total</span>
-                <span className="text-[#D4A853]" style={{ color: golden }}>
-                  ${totalPrice.toFixed(2)}
+              {/* Timer Badge */}
+              <div
+                className="inline-flex items-center px-5 py-2.5 rounded-[10px] border border-white"
+                style={{ backgroundColor: "#A0522D" }}
+              >
+                <span className="text-white text-base tracking-[0.08px]">
+                  We're holding this table for you for{" "}
+                  <span className="font-medium">
+                    {formatTime(timeRemaining)}
+                  </span>
                 </span>
               </div>
+
+              {/* Price (Mocked as single price from details page) */}
+              <div className="space-y-1">
+                <div className="text-white text-[34px] font-normal">
+                  {destination.price}€
+                </div>
+                <div className="text-white/75 text-base font-medium tracking-[0.024px]">
+                  84лв
+                </div>
+              </div>
+
+              {/* Available Seating Options */}
+              <div className="space-y-6">
+                <h2 className="text-white text-xl font-medium tracking-[0.03px]">
+                  Available seating options
+                </h2>
+                <div className="space-y-4">
+                  {seatingOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => setSelectedSeating(option.id)}
+                      className={cn(
+                        "w-full flex items-center justify-between px-4 py-3.5 rounded-lg border border-white transition-all",
+                        selectedSeating === option.id
+                          ? "bg-golden/20 border-golden"
+                          : "bg-white/10 backdrop-blur-sm hover:bg-white/15"
+                      )}
+                      style={{
+                        backgroundColor:
+                          selectedSeating === option.id
+                            ? `${golden}20`
+                            : "#FFFFFF1A",
+                        borderColor:
+                          selectedSeating === option.id ? golden : "#FFFFFF",
+                      }}
+                    >
+                      <span className="text-white text-sm tracking-[0.035px]">
+                        {option.label}
+                      </span>
+                      <span
+                        className="px-2.5 py-0.5 rounded-md border-[0.5px] bg-golden text-[#F4F4F4] text-sm font-medium tracking-[0.175px] shadow-lg"
+                        style={{ backgroundColor: golden }}
+                      >
+                        Select
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Diner's Details (Simplified - assumed pre-filled from user) */}
+              <div className="space-y-4">
+                <h2 className="text-white text-xl font-medium tracking-[0.03px]">
+                  Diner's Details
+                </h2>
+                {/* Phone Input */}
+                <div className="flex items-center gap-5 px-5 py-3 rounded-[10px] border border-white bg-white/10 backdrop-blur-sm">
+                  <Phone className="w-6 h-6 text-white" />
+                  <div className="w-px h-11 bg-white" />
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="flex-1 bg-transparent text-white text-xl font-medium tracking-[0.03px] outline-none placeholder:text-white/50"
+                    placeholder="+49 125 456 3"
+                  />
+                </div>
+                <p className="text-white text-sm tracking-[0.035px]">
+                  You will receive a text message to verify your account.
+                  Message & data rates may apply.
+                </p>
+              </div>
+
+              {/* Booking Details */}
+              <div className="space-y-4">
+                <h2 className="text-white text-xl font-medium tracking-[0.03px]">
+                  Booking details
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Occasion Selector */}
+                  <div className="relative">
+                    <select
+                      value={occasion}
+                      onChange={(e) => setOccasion(e.target.value)}
+                      className="w-full px-5 py-3 rounded-[10px] border border-white bg-white/10 backdrop-blur-sm text-white/60 text-sm tracking-[0.035px] outline-none appearance-none cursor-pointer"
+                      style={{
+                        color: occasion ? "white" : "#FFFFFF99",
+                        backgroundColor: "#FFFFFF1A",
+                      }}
+                    >
+                      <option value="" disabled className="bg-[#0E1A2B]">
+                        Select an occasion
+                      </option>
+                      <option value="birthday" className="bg-[#0E1A2B]">
+                        Birthday
+                      </option>
+                      <option value="anniversary" className="bg-[#0E1A2B]">
+                        Anniversary
+                      </option>
+                    </select>
+                    <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-6 h-6 text-white pointer-events-none" />
+                  </div>
+
+                  {/* Special Request */}
+                  <input
+                    type="text"
+                    value={specialRequest}
+                    onChange={(e) => setSpecialRequest(e.target.value)}
+                    placeholder="Add a special Request (optional)"
+                    className="px-5 py-3 rounded-[10px] border border-white bg-white/10 backdrop-blur-sm text-white text-sm tracking-[0.035px] outline-none placeholder:text-white/60"
+                  />
+                </div>
+              </div>
+
+              {/* Checkboxes */}
+              <div className="space-y-3 pt-4">
+                {/* Email Offers */}
+                <label className="flex items-start gap-2 cursor-pointer group">
+                  <div
+                    onClick={() => setEmailOffers(!emailOffers)}
+                    className="w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-colors flex-shrink-0"
+                    style={{
+                      borderColor: golden,
+                      backgroundColor: emailOffers ? golden : "transparent",
+                    }}
+                  >
+                    {emailOffers && (
+                      <Check className="w-4 h-4 text-[#0A1E3C]" />
+                    )}
+                  </div>
+                  <span className="text-white text-sm tracking-[0.035px]">
+                    Sign me up to receive dining offers and news from this
+                    restaurant by email.
+                  </span>
+                </label>
+
+                {/* Text Updates */}
+                <label className="flex items-start gap-2 cursor-pointer group">
+                  <div
+                    onClick={() => setTextUpdates(!textUpdates)}
+                    className="w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-colors flex-shrink-0"
+                    style={{
+                      borderColor: golden,
+                      backgroundColor: textUpdates ? golden : "transparent",
+                    }}
+                  >
+                    {textUpdates && (
+                      <Check className="w-4 h-4 text-[#0A1E3C]" />
+                    )}
+                  </div>
+                  <span className="text-white text-sm tracking-[0.035px]">
+                    Yes, I want to get text updates and reminders about my
+                    bookings.
+                  </span>
+                </label>
+              </div>
+
+              {/* Complete Booking Button */}
+              <Button
+                onClick={handleCompleteBooking}
+                className="w-full max-w-[670px] px-10 py-3 rounded-[11px] border-[0.5px] border-white text-xl font-medium tracking-[0.03px] shadow-lg hover:bg-opacity-90 transition-colors h-12"
+                style={{ backgroundColor: golden, color: "#0A1E3C" }}
+              >
+                Complete Booking
+              </Button>
             </div>
 
-            <Button
-              onClick={handleContinue}
-              className="w-full text-[#0A1E3C] h-12"
-              style={{ backgroundColor: golden, color: "#0A1E3C" }}
-            >
-              Continue to {user ? "Checkout" : "Login"}
-            </Button>
+            {/* Right Column - Info Card */}
+            <div className="lg:w-[426px] p-10 lg:p-[42px] rounded-[21px] border border-white bg-white/10 backdrop-blur-sm space-y-5 h-fit lg:sticky lg:top-8">
+              <h3 className="text-white text-2xl font-bold">
+                What to know before you go
+              </h3>
+              <p className="text-white/60 text-base tracking-[0.08px]">
+                A note from the restaurant
+              </p>
+              <p className="text-white text-base font-medium tracking-[0.024px] leading-relaxed">
+                While we do everything possible to accommodate all seating
+                requests, we are unable to guarantee a specific table or
+                section. Please allow a grace period of 15 minutes for seating
+                during peak times. If you do not see a reservation time or party
+                size available, please contact us directly.
+              </p>
+            </div>
           </div>
-        </div>
+        </main>
+
+        <Footer />
       </div>
     </div>
   );

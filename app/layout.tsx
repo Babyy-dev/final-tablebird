@@ -1,6 +1,5 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-// Assuming you still use Geist fonts
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -33,6 +32,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        // Ensure dark background for the whole application
         style={{ backgroundColor: "#0E1A2B", color: "#ededed" }}
       >
         <LanguageProvider>

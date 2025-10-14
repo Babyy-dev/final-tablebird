@@ -2,7 +2,7 @@
 import { Star, User } from "lucide-react";
 import React from "react";
 
-// Mock Review interface as it wasn't explicitly provided in data
+// Mock Review interface
 interface Review {
   id: number;
   rating: number;
@@ -44,7 +44,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
       <div className="flex items-center space-x-3 border-t border-gray-700 pt-4">
         <div className="h-10 w-10 bg-gray-600 rounded-full flex items-center justify-center">
           {review.reviewerAvatar ? (
-            <User className="h-5 w-5 text-gray-300" /> // Placeholder for avatar
+            <User className="h-5 w-5 text-gray-300" />
           ) : (
             <User className="h-5 w-5 text-gray-300" />
           )}

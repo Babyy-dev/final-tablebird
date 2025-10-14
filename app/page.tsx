@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -17,12 +17,12 @@ import {
   CreditCard,
 } from "lucide-react";
 
-// Local Imports
+// Local Imports: FIXING THE DATA PATH ERROR
 import { destinations as allRestaurants } from "@/lib/data/destinations";
 import Header from "@/components/Header";
 
 export default function Index() {
-  const golden = "#BC995D";
+  const golden = "#BC995D"; // Assuming this is the correct gold from your latest CSS
   const router = useRouter();
 
   // Header state (passed to Header component)
@@ -54,7 +54,7 @@ export default function Index() {
     "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80",
   ];
 
-  function scrollNext() {
+  const scrollNext = useCallback(() => {
     const el = sliderRef.current;
     if (!el) return;
     const max = el.scrollWidth - el.clientWidth;
@@ -63,8 +63,9 @@ export default function Index() {
     } else {
       el.scrollBy({ left: CARD_W, behavior: "smooth" });
     }
-  }
-  function scrollPrev() {
+  }, [CARD_W]);
+
+  const scrollPrev = useCallback(() => {
     const el = sliderRef.current;
     if (!el) return;
     if (el.scrollLeft <= 0) {
@@ -72,14 +73,15 @@ export default function Index() {
     } else {
       el.scrollBy({ left: -CARD_W, behavior: "smooth" });
     }
-  }
+  }, [CARD_W]);
+
   useEffect(() => {
     if (!auto) return;
     const id = setInterval(scrollNext, 4000);
     return () => clearInterval(id);
   }, [auto, scrollNext]);
 
-  // Global keyboard navigation (Left/Right arrows), ignoring form fields
+  // Global keyboard navigation
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
@@ -98,7 +100,7 @@ export default function Index() {
     return () => window.removeEventListener("keydown", onKey);
   }, [scrollNext, scrollPrev]);
 
-  // Data Definitions (kept local as they are small and page-specific)
+  // Data Definitions (pulled from previous context)
   const timeCategories = [
     {
       name: "Breakfast",
@@ -131,7 +133,7 @@ export default function Index() {
     {
       name: "Mexican",
       image:
-        "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80",
+        "https://images.unsplash.com/photo-1565299624946-b28f0a0ae38?w=400&q=80",
     },
     {
       name: "Japanese",

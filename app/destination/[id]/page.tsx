@@ -3,12 +3,11 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useBooking } from "@/context/BookingContext";
 import { destinations } from "@/lib/data/destinations";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-// NOTE: You must create this file in components/ui
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 import {
   Star,
   MapPin,
@@ -43,7 +42,10 @@ export default function DestinationDetailPage({
         <div className="text-center">
           <h1 className="text-3xl mb-4">Destination not found</h1>
           <Link href="/">
-            <Button className="bg-[#D4A853] hover:bg-[#C9A961] text-[#0A1E3C] rounded-lg">
+            <Button
+              className="bg-[#D4A853] hover:bg-[#C9A961] text-[#0A1E3C] rounded-lg"
+              style={{ backgroundColor: golden, color: "#0A1E3C" }}
+            >
               Back to Home
             </Button>
           </Link>
@@ -59,17 +61,18 @@ export default function DestinationDetailPage({
 
   const iconMap: { [key: string]: any } = {
     WiFi: Wifi,
-    "Fine Dining": Utensils,
-    Restaurant: Utensils,
-    "Room Service": Coffee,
+    "Private Dining": Utensils,
+    "Wine Cellar": Coffee,
     "Valet Parking": Car,
     "Rooftop Terrace": Utensils,
+    "Ocean View": MapPin,
+    "Fresh Seafood": Utensils,
+    "Outdoor Deck": Utensils,
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-16 bg-[#0A1E3C]">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-16">
       <div className="mb-6 md:mb-8">
-        {/* Back Button adaptation */}
         <button
           onClick={() => router.back()}
           className="text-gray-400 hover:text-white transition mb-4 flex items-center"
@@ -113,38 +116,63 @@ export default function DestinationDetailPage({
         </div>
       </div>
 
-      {/* Main Content & Booking Card */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Gallery Placeholder */}
         <div className="lg:col-span-2 space-y-8">
+          {/* Gallery */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2 h-96 relative">
-              <ImageWithFallback
+              <Image
                 src={destination.image}
                 alt={destination.title}
+                fill
                 className="object-cover rounded-lg"
               />
             </div>
-            {/* Additional image placeholders */}
+            {/* Amenity Images */}
             <div className="h-48 relative">
-              <ImageWithFallback
+              <Image
                 src="https://images.unsplash.com/photo-1731336478850-6bce7235e320?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob3RlbCUyMHJvb20lMjBsdXh1cnl8ZW58MXx8fHwxNzU5ODU1OTYyfDA&ixlib=rb-4.1.0&q=80&w=1080"
                 alt="Room"
+                fill
                 className="object-cover rounded-lg"
               />
             </div>
             <div className="h-48 relative">
-              <ImageWithFallback
+              <Image
                 src="https://images.unsplash.com/photo-1671127172578-6e877abab905?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHx0cm9waWNhbCUyMGJlYWNoJTIwcmVzb3J0fGVufDF8fHx8MTc1OTg4NTcwOHww&ixlib=rb-4.1.0&q=80&w=1080"
                 alt="Amenity"
+                fill
                 className="object-cover rounded-lg"
               />
             </div>
           </div>
-          <h2 className="text-2xl text-white mb-4">About this destination</h2>
-          <p className="text-gray-400 leading-relaxed">
-            {destination.description}
-          </p>
+
+          {/* Description */}
+          <div>
+            <h2 className="text-2xl text-white mb-4">About this destination</h2>
+            <p className="text-gray-400 leading-relaxed">
+              {destination.description}
+            </p>
+          </div>
+
+          {/* Amenities */}
+          <div>
+            <h2 className="text-2xl text-white mb-4">Amenities</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {destination.amenities.map((amenity, index) => {
+                const Icon = iconMap[amenity] || Check;
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 text-gray-300"
+                  >
+                    <Icon className="h-5 w-5" style={{ color: golden }} />
+                    <span>{amenity}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {/* Booking Card */}
@@ -166,7 +194,6 @@ export default function DestinationDetailPage({
             >
               Book Now
             </Button>
-            {/* ... other details ... */}
           </div>
         </div>
       </div>

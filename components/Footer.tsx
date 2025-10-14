@@ -2,10 +2,8 @@
 import Link from "next/link";
 import { Twitter, Instagram, Facebook, Linkedin } from "lucide-react";
 import React from "react";
-// import { useLanguage } from '@/context/LanguageContext'; // Removed for simplicity in this file
 
 export default function Footer() {
-  // const { t } = useLanguage();
   const golden = "#D4A853";
   const t = (key: string) => key; // Mock translation function
 
@@ -40,9 +38,9 @@ export default function Footer() {
   ];
 
   const socialLinks = [
+    { icon: Facebook, href: "#" },
     { icon: Twitter, href: "#" },
     { icon: Instagram, href: "#" },
-    { icon: Facebook, href: "#" },
     { icon: Linkedin, href: "#" },
   ];
 
@@ -58,7 +56,7 @@ export default function Footer() {
                 <Link
                   key={index}
                   href={item.href}
-                  className="text-gray-400 hover:text-[#D4A853]"
+                  className="text-gray-400 hover:text-[#D4A853] transition"
                 >
                   <item.icon className="w-6 h-6" />
                 </Link>
