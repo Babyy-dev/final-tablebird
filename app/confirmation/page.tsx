@@ -14,9 +14,6 @@ import {
   DollarSign,
   QrCode,
   BookOpen,
-  Navigation,
-  MessageSquare,
-  Check,
   CheckCircle,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -26,7 +23,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function ConfirmationPage() {
   const router = useRouter();
-  const { bookingData, userBookings, clearBooking } = useBooking();
+  const { userBookings, clearBooking } = useBooking();
   const golden = "#D4A853";
   const navyDark = "#0E1A2B";
 
@@ -51,10 +48,10 @@ export default function ConfirmationPage() {
   const destination = latestBooking.destination;
   const bookingCode = latestBooking.id.slice(-8);
 
-  const handleNewBooking = () => {
-    clearBooking(); // Reset booking state
-    router.push("/");
-  };
+  // const handleNewBooking = () => {
+  //   clearBooking(); // Reset booking state
+  //   router.push("/");
+  // };
 
   return (
     <div

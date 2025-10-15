@@ -2,45 +2,27 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-// Destination interface is defined here to be self-contained
-interface Destination {
-  id: string;
-  image: string;
-  title: string;
-  location: string;
-  rating: number;
-  reviews: number;
-  price: number;
-  duration: string;
-  featured?: boolean;
-  description: string;
-  amenities: string[];
-  included: string[];
-  category: string;
-}
+import { Destination } from "@/lib/data/destinations"; // Use shared interface
 
 interface BookingData {
   destination: Destination | null;
   checkIn: Date | null;
   checkOut: Date | null;
+  time: string;
   guests: number;
-  rooms: number;
   totalPrice: number;
+  seating: string | null;
 }
 
 interface User {
   name: string;
   email: string;
-  avatar?: string;
-  type?: 'customer' | 'venue-manager' | 'admin';
-  restaurantName?: string;
 }
 
 interface BookingContextType {
   bookingData: BookingData;
   setBookingData: (data: Partial<BookingData>) => void;
   user: User | null;
-  setUser: (user: User | null) => void;
   userBookings: any[];
   addBooking: (booking: any) => void;
   clearBooking: () => void;
@@ -53,18 +35,16 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     destination: null,
     checkIn: null,
     checkOut: null,
+    time: "19:00",
     guests: 2,
-    rooms: 1,
     totalPrice: 0,
+    seating: null,
   });
 
-  // MOCK USER STATE: Change the 'type' to test different dashboards.
-  const [user, setUser] = useState<User | null>({
-    name: "Admin Alice",
-    email: "admin@tablebird.com",
-    type: "admin", // <-- Change to 'venue-manager' or 'customer' for testing
-    avatar: 'https://images.unsplash.com/photo-1617818247016-50e017f99305?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxjdXN0b21lciUyMGZhY2V8ZW58MXx8fHwxNzU5OTQ2NzI5fDA&ixlib=rb-4.1.0&q=80&w=1080',
-    restaurantName: "La Trattoria"
+  // Mock User/Bookings
+  const [user] = useState<User | null>({
+    name: "Sofia",
+    email: "sofia@example.com",
   });
   const [userBookings, setUserBookings] = useState<any[]>([]);
 
@@ -81,9 +61,10 @@ export function BookingProvider({ children }: { children: ReactNode }) {
       destination: null,
       checkIn: null,
       checkOut: null,
+      time: "19:00",
       guests: 2,
-      rooms: 1,
       totalPrice: 0,
+      seating: null,
     });
   };
 
@@ -93,7 +74,6 @@ export function BookingProvider({ children }: { children: ReactNode }) {
         bookingData,
         setBookingData,
         user,
-        setUser,
         userBookings,
         addBooking,
         clearBooking,

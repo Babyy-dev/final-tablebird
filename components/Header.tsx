@@ -3,18 +3,26 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Search, MapPin, ChevronDown, Globe } from "lucide-react";
+import { Search, MapPin, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { LocationSearchPopover } from "@/components/LocationSearchPopover";
+import { Button } from "@/components/ui/button"; // Assuming Button component exists
+
 const LOGO_PATH = "/logo.png";
 
 interface HeaderProps {
   lang: "EN" | "BG";
   setLang: (lang: "EN" | "BG") => void;
+  // Optional prop to change header background for pages that don't have a hero image
+  isTransparent?: boolean;
 }
 
-export default function Header({ lang, setLang }: HeaderProps) {
+export default function Header({
+  lang,
+  setLang,
+  isTransparent = true,
+}: HeaderProps) {
   const golden = "#BC995D";
   const router = useRouter();
   const [isLocationOpen, setIsLocationOpen] = useState(false);
@@ -25,10 +33,12 @@ export default function Header({ lang, setLang }: HeaderProps) {
     router.push("/explore");
   };
 
-  // NOTE: For Next.js, we don't need the local 'scrollNext/Prev' logic here.
+  const bgColor = isTransparent
+    ? "bg-transparent"
+    : "bg-[#0E1A2B] border-b border-white/10";
 
   return (
-    <header className="absolute top-0 left-0 right-0 z-10">
+    <header className={`sticky top-0 z-50 ${bgColor}`}>
       <div className="max-w-[1440px] mx-auto px-6 lg:px-14 py-6 flex justify-between items-center">
         <Link href="/">
           <Image
@@ -67,7 +77,7 @@ export default function Header({ lang, setLang }: HeaderProps) {
             <Search className="w-5 h-5 text-white" />
           </div>
 
-          {/* Language Toggle (using simple button logic from previous step) */}
+          {/* Language Toggle */}
           <button
             onClick={() => setLang(lang === "EN" ? "BG" : "EN")}
             role="switch"
@@ -96,7 +106,21 @@ export default function Header({ lang, setLang }: HeaderProps) {
             </span>
           </button>
 
-          {/* Navigation Links and Register button (omitted for brevity, use your existing home page links) */}
+          {/* Login/Register Links (Re-added for header completeness) */}
+          <Link
+            href="/Login"
+            className="text-white text-sm font-medium hover:text-[#D4A853] transition-colors ml-4"
+          >
+            Login
+          </Link>
+          <Link href="/Register">
+            <Button
+              className="ml-2 px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition-colors"
+              style={{ backgroundColor: golden }}
+            >
+              Register
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -107,8 +131,7 @@ export default function Header({ lang, setLang }: HeaderProps) {
         onSelectLocation={(loc) => {
           setCurrentLocation(loc);
           setIsLocationOpen(false);
-          // Optional: redirect to location explore page
-          // router.push(`/location/${loc.toLowerCase().replace(/\s+/g, '-')}`);
+          router.push(`/explore?loc=${loc}`);
         }}
       />
     </header>

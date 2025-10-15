@@ -275,13 +275,13 @@ export default function Index() {
                   <ChevronDown className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
-              <button
-                onClick={onSearch}
+              <Link
+                href="/explore"
                 className={`px-10 md:px-12 py-3.5 rounded-md text-white text-sm font-medium text-center`}
                 style={{ backgroundColor: golden }}
               >
                 Search
-              </button>
+              </Link>
             </div>
           </div>
         </div>

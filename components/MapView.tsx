@@ -1,80 +1,173 @@
 // components/MapView.tsx
 "use client";
 
-import React from "react";
-import { MapPin, Search } from "lucide-react";
+import React, { useMemo } from "react";
 import Image from "next/image";
+import { X, Star, MapPin } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { RestaurantCardProps } from "./RestaurantCard";
 
-interface Restaurant {
-  id: string;
-  name: string;
-  rating: number;
-  x: number; // Normalized X coordinate (0 to 1)
-  y: number; // Normalized Y coordinate (0 to 1)
+// Extend MapMarker interface to include all card props needed for the preview
+export interface MapMarker extends Omit<RestaurantCardProps, "onSelect"> {
+  id: string; // Ensure ID is string for marker system
+  x: number; // 0..1 (left %)
+  y: number; // 0..1 (top %)
 }
 
 interface MapViewProps {
-  markers: Restaurant[];
-  selectedId: string | number | null;
-  onSelect: (id: string | number | null) => void;
+  markers?: MapMarker[];
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
 }
 
 export default function MapView({
-  markers,
-  selectedId,
+  markers = [],
+  selectedId = null,
   onSelect,
 }: MapViewProps) {
   const golden = "#BC995D";
+  const deepBlue = "#0E1A2B";
+  const router = useRouter();
+
+  const list: MapMarker[] = useMemo(
+    () => (Array.isArray(markers) ? markers : []),
+    [markers]
+  );
+  const selected = list.find((m) => m.id === selectedId);
+
+  const handleMarkerClick = (id: string) => {
+    onSelect(id);
+  };
+
+  const handleDetailsClick = () => {
+    if (selected) {
+      router.push(`/venue/${selected.id}`);
+    }
+  };
+
+  const handleCloseClick = () => {
+    onSelect(null);
+  };
 
   return (
-    <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-xl bg-gray-300">
-      <Image
-        // Placeholder for a map image
-        src="https://images.unsplash.com/photo-1549490349-87436b6ff9a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYXJrJTIwY2l0eSUyMG1hcHxlbnwxfHx8fDE3NTk5NTc4ODJ8MA&ixlib=rb-4.1.0&q=80&w=1080"
-        alt="Map of locations"
-        fill
-        className="object-cover"
-      />
-
-      {/* Map Control - Search Bar */}
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-11/12 bg-white rounded-full p-3 shadow-md flex items-center justify-between">
-        <input
-          type="text"
-          placeholder="Search the map"
-          className="flex-1 text-sm outline-none text-gray-800"
+    <div className="sticky top-8 w-full h-[713px] rounded-xl bg-gray-300 overflow-hidden shadow-2xl">
+      <div className="relative w-full h-full">
+        {/* Background Map Image */}
+        <Image
+          src="/map.png"
+          alt="Map"
+          fill
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <Search className="w-5 h-5 text-gray-500" />
-      </div>
 
-      {/* Markers */}
-      {markers.map((marker) => (
-        <div
-          key={marker.id}
-          className={cn(
-            "absolute flex items-center justify-center p-1 rounded-full shadow-lg transition-all cursor-pointer",
-            marker.id === selectedId
-              ? "bg-red-500 ring-4 ring-red-300 z-20 w-8 h-8"
-              : "bg-[#213C62] w-6 h-6 z-10 hover:scale-125"
-          )}
-          style={{
-            top: `${marker.y * 100}%`,
-            left: `${marker.x * 100}%`,
-            transform: `translate(-50%, -50%)`,
-            backgroundColor: marker.id === selectedId ? golden : "#213C62",
-          }}
-          onClick={() => onSelect(marker.id)}
-        >
-          <MapPin className="w-4 h-4 text-white" />
+        {/* Map Markers */}
+        {list.map((m) => (
+          <button
+            key={m.id}
+            type="button"
+            aria-label={`Select ${m.name}`}
+            onClick={() => handleMarkerClick(m.id)}
+            onMouseEnter={() => onSelect(m.id)}
+            onMouseLeave={() => onSelect(null)}
+            className={cn(
+              "absolute w-8 h-8 rounded-full border-[3px] border-white transition-transform -translate-x-1/2 -translate-y-1/2",
+              selectedId === m.id
+                ? "ring-4 ring-golden/60 scale-110"
+                : "hover:scale-110"
+            )}
+            style={{
+              left: `${m.x * 100}%`,
+              top: `${m.y * 100}%`,
+              backgroundColor: selectedId === m.id ? golden : "#22c55e", // Use green for unselected
+            }}
+          >
+            {selectedId === m.id ? (
+              <MapPin className="w-4 h-4 text-white mx-auto" />
+            ) : null}
+          </button>
+        ))}
 
-          {/* Tooltip/Label */}
-          {marker.id === selectedId && (
-            <div className="absolute bottom-full mb-2 bg-white text-gray-800 p-2 rounded-md whitespace-nowrap text-xs">
-              {marker.name} ({marker.rating})
+        {/* Selected Restaurant Preview Card */}
+        {selected && (
+          <div className="absolute right-4 top-4 w-[330px] rounded-xl border border-white/30 bg-black/40 backdrop-blur-md overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.45)] z-30">
+            <div className="relative h-[190px]">
+              {/* Image with gradient overlay */}
+              <Image
+                src={selected.image}
+                alt={selected.name}
+                fill
+                className="absolute inset-0 object-cover"
+              />
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.85) 100%)`,
+                }}
+              />
+
+              <button
+                type="button"
+                onClick={handleCloseClick}
+                aria-label="Close"
+                className="absolute right-2 top-2 p-1 rounded-md bg-black/50 text-white hover:bg-black/70 z-40"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-          )}
-        </div>
-      ))}
+
+            {/* Card Content */}
+            <div className="p-4 bg-[#1A2E4C]">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-white text-lg font-semibold">
+                  {selected.name}
+                </h3>
+                <span className="px-2 py-0.5 rounded bg-red-600 text-white text-xs font-medium">
+                  {selected.price}
+                </span>
+              </div>
+
+              {/* Rating and Location */}
+              <div className="flex items-center gap-2 text-white/90 text-sm mb-2">
+                <svg
+                  className="w-4 h-4"
+                  viewBox="0 0 20 20"
+                  fill="#22c55e"
+                  aria-hidden="true"
+                >
+                  <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.953L10 0l2.951 5.957 6.561.953-4.756 4.635 1.122 6.545z" />
+                </svg>
+                <span>{selected.rating ?? "4.5"}</span>
+                <span className="mx-1">•</span>
+                <MapPin className="w-4 h-4" />
+                <span>{selected.location}</span>
+              </div>
+
+              {/* Tags */}
+              <div className="flex gap-1.5 flex-wrap mb-3">
+                {(selected.tags ?? []).slice(0, 4).map((t, i) => (
+                  <span
+                    key={i}
+                    className="px-2 py-0.5 rounded text-xs font-medium"
+                    style={{ backgroundColor: golden, color: deepBlue }}
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+
+              {/* Navigation Button */}
+              <button
+                onClick={handleDetailsClick}
+                className="w-full py-2 rounded-md font-medium hover:brightness-105 transition-colors"
+                style={{ backgroundColor: golden, color: deepBlue }}
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

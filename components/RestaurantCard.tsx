@@ -1,15 +1,15 @@
 // components/RestaurantCard.tsx
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { Star, MapPin, Tag } from "lucide-react";
+import { Star, MapPin, Tag, Bookmark } from "lucide-react";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
-interface Restaurant {
-  id: string;
+// Use the exact props structure from the data file
+export interface RestaurantCardProps {
+  id: string | number; // Updated to accept both types, but treats as string internally
   name: string;
   rating: number;
   price: string;
@@ -17,87 +17,110 @@ interface Restaurant {
   location: string;
   neighborhood: string;
   image: string;
-  tags: string[];
-  x: number;
-  y: number;
-}
-
-interface RestaurantCardProps {
-  restaurant: Restaurant;
-  onSelect: (id: string) => void;
+  tags?: string[];
+  onSelect?: (id: number | null) => void; // Updated to emit number ID
 }
 
 export default function RestaurantCard({
-  restaurant,
+  id,
+  name,
+  rating,
+  price,
+  cuisine,
+  location,
+  neighborhood,
+  image,
+  tags = [],
   onSelect,
 }: RestaurantCardProps) {
   const golden = "#BC995D";
+  const deepBlue = "#0E1A2B";
   const router = useRouter();
-  const id = restaurant.id;
 
-  // 4. When we click on venue card it shows info (and navigates on click of card body/link)
-  const handleCardClick = () => {
-    router.push(`/venue/${id}`);
+  // Ensure ID is treated as string for routing
+  const stringId = String(id);
+  const numberId = typeof id === "number" ? id : parseInt(id, 10);
+
+  const openDetails = () => {
+    router.push(`/venue/${stringId}`);
+  };
+
+  const handleMouseEnter = () => {
+    if (onSelect) onSelect(numberId); // Emit number ID
+  };
+  const handleMouseLeave = () => {
+    if (onSelect) onSelect(null);
   };
 
   return (
-    <div
-      className="bg-[#1A2E4C] rounded-xl overflow-hidden shadow-lg transform transition duration-300 hover:scale-[1.02] group cursor-pointer border border-transparent hover:border-[#D4A853]"
-      onMouseEnter={() => onSelect(id)}
-      onMouseLeave={() => onSelect(null)}
-      onClick={handleCardClick}
+    <button
+      type="button"
+      onClick={openDetails}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="relative h-[236px] rounded-xl border border-white/50 bg-[#1A2E4C] overflow-hidden text-left focus:outline-none focus:ring-4 focus:ring-[#BC995D] transition-all duration-300 hover:scale-[1.01]"
+      aria-label={`Open ${name} details`}
+      style={{ boxShadow: `0 4px 12px rgba(0, 0, 0, 0.2)` }}
     >
-      <div className="relative h-48 w-full">
-        {/* Placeholder image path, assuming assets are in public */}
-        <Image
-          src="/placeholder.svg"
-          alt={restaurant.name}
-          fill
-          sizes="33vw"
-          className="object-cover"
-        />
+      {/* Background Image & Gradient */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          // FIX: Use the actual image prop
+          backgroundImage: `linear-gradient(270deg, ${deepBlue}C0 33.66%, ${deepBlue}00 100%), url(${image})`,
+        }}
+      />
 
-        <div className="absolute top-3 right-3 p-1 rounded bg-[#125604]">
-          <span className="text-[#5F5] text-sm font-medium">
-            {restaurant.rating}
-          </span>
+      <div className="relative h-full flex flex-col justify-end p-4 pl-28">
+        {/* Top Header Row */}
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-white text-xl font-semibold">{name}</h3>
+              <Bookmark className="w-4 h-4 text-white hover:text-[#D4A853]" />
+            </div>
+
+            {/* Rating */}
+            <div className="flex items-center gap-1 mb-1">
+              <svg
+                className="w-4 h-4"
+                viewBox="0 0 20 20"
+                fill="#22c55e"
+                aria-hidden="true"
+              >
+                <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.953L10 0l2.951 5.957 6.561.953-4.756 4.635 1.122 6.545z" />
+              </svg>
+              <span className="text-white text-sm">{rating}</span>
+            </div>
+
+            <p className="text-white text-sm mb-1">{cuisine}</p>
+          </div>
+
+          {/* Price Tag */}
+          <div className="px-3 py-1 rounded bg-red-600 text-white text-xs font-medium">
+            {price}
+          </div>
         </div>
-      </div>
 
-      <div className="p-4 space-y-3">
-        <h3 className="text-2xl font-semibold text-white truncate">
-          {restaurant.name}
-        </h3>
-
-        <div className="flex items-center gap-2 text-white/70 text-sm">
-          <Tag className="h-4 w-4" />
-          <span>
-            {restaurant.cuisine} - {restaurant.price}
-          </span>
+        {/* Location Details */}
+        <div className="text-white/80 text-xs mb-2">
+          <p>{location}</p>
+          <p>{neighborhood}</p>
         </div>
 
-        <div className="flex items-center gap-2 text-white/70 text-sm">
-          <MapPin className="h-4 w-4" />
-          <span>{restaurant.location}</span>
-        </div>
-
-        <div className="text-xs text-white/50">{restaurant.neighborhood}</div>
-
-        <div className="flex gap-2 pt-2">
-          {restaurant.tags.map((tag, index) => (
+        {/* Tags */}
+        <div className="flex gap-1.5 flex-wrap">
+          {tags.map((tag, idx) => (
             <span
-              key={index}
-              className={cn(
-                "px-3 py-1 rounded-full text-xs font-medium text-white",
-                index === 0 ? "bg-[#D4A853]" : "bg-[#213C62]" // Highlighting the first tag
-              )}
-              style={{ backgroundColor: index === 0 ? golden : "#213C62" }}
+              key={idx}
+              className="px-2 py-0.5 rounded text-xs font-medium"
+              style={{ backgroundColor: golden, color: deepBlue }}
             >
               {tag}
             </span>
           ))}
         </div>
       </div>
-    </div>
+    </button>
   );
 }

@@ -78,7 +78,7 @@ export default function AdminAnalyticsPage() {
                 <span className="font-bold">$8,500</span>
               </li>
               <li className="flex justify-between">
-                <span>2. Ocean's Catch</span>
+                <span>2. Oceans Catch</span>
                 <span className="font-bold">$7,200</span>
               </li>
               <li className="flex justify-between">
