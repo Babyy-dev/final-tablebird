@@ -14,7 +14,6 @@ import { restaurants } from "@/lib/data/restaurants";
 
 export default function ExplorePage() {
   const searchParams = useSearchParams();
-  const golden = "#BC995D";
 
   // State for search/filter bar inputs
   const [time, setTime] = useState(searchParams.get("time") || "19:00");
@@ -32,9 +31,6 @@ export default function ExplorePage() {
   );
 
   // Handler for search button
-  const handleSearch = () => {
-    console.log("Refining search:", { time, date, guests });
-  };
 
   // FIX: Helper to convert number ID from data to string for component props
   const handleSelect = (id: number | null) => {
@@ -45,19 +41,10 @@ export default function ExplorePage() {
     <div className="min-h-screen bg-[#0E1A2B] flex flex-col">
       <Header lang={lang} setLang={setLang} isTransparent={false} />
 
-      {/* Filter/Hero Bar */}
-      <div
-        className="w-full pb-6 pt-0"
-        style={{
-          background:
-            "radial-gradient(7.64% 111.53% at 0% 77.22%, #064194 0%, rgba(14, 26, 43, 0.00) 100%), radial-gradient(8.81% 67.5% at 96.67% 44.69%, #064194 0%, rgba(14, 26, 43, 0.00) 100%), radial-gradient(14.14% 32.54% at 1.11% -0.19%, #064194 0%, rgba(14, 26, 43, 0.00) 100%), radial-gradient(19.69% 150.83% at 101.94% 6.59%, #064194 0%, rgba(14, 26, 43, 0.00) 100%), radial-gradient(8.97% 68.75% at -3.75% 22.84%, #064194 0%, rgba(14, 26, 43, 0.00) 100%), #0E1A2B",
-        }}
-      >
-        <div className="max-w-[1400px] mx-auto px-[42px]">
-          <div className="w-full p-6 md:p-8 rounded-xl border border-white bg-gradient-to-b from-[rgba(33,60,98,0.55)] to-[rgba(0,0,0,0.55)] shadow-md backdrop-blur-md">
-            <h3 className="text-white text-base font-medium mb-4">
-              Refine Search
-            </h3>
+      {/* Filter */}
+      <div>
+        <div className="flex-1 max-w-[800px] mx-auto px-[30px]">
+          <div className="w-full p-6 md:p-8 rounded-xl border border-[#eec212] bg-gradient-to-b from-[rgba(33,60,98,0.55)] to-[rgba(0,0,0,0.55)] shadow-md backdrop-blur-md">
             <div className="flex flex-wrap items-end gap-6 md:gap-10">
               <div className="flex-1 min-w-[120px]">
                 <label className="text-white/50 text-xs mb-1 block">Time</label>
@@ -88,13 +75,6 @@ export default function ExplorePage() {
                   className="bg-transparent border-white/40 text-white"
                 />
               </div>
-              <button
-                onClick={handleSearch}
-                className={`px-10 md:px-12 py-3.5 rounded-md text-white text-sm font-medium text-center`}
-                style={{ backgroundColor: golden }}
-              >
-                Search
-              </button>
             </div>
           </div>
         </div>

@@ -1,18 +1,15 @@
 // app/booking/page.tsx
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useBooking } from "@/context/BookingContext";
 import {
-  MapPin,
   Calendar,
   Clock,
   Users,
   ChevronDown,
   Phone,
-  Mail,
-  Timer,
   Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,7 +27,6 @@ export default function BookingPage() {
   const [occasion, setOccasion] = useState("");
   const [specialRequest, setSpecialRequest] = useState("");
   const [emailOffers, setEmailOffers] = useState(false);
-  const [openTableOffers, setOpenTableOffers] = useState(false);
   const [textUpdates, setTextUpdates] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(292); // 4:52 in seconds
 
@@ -52,7 +48,6 @@ export default function BookingPage() {
   }
 
   const destination = bookingData.destination;
-  const currentYear = new Date().getFullYear();
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -84,16 +79,16 @@ export default function BookingPage() {
     };
 
     // MOCK: Add to user bookings to show in confirmation page
-    const mockBooking = {
-      id: Date.now().toString(),
-      destination,
-      checkIn: new Date(),
-      checkOut: new Date(),
-      guests: 2,
-      rooms: 1,
-      totalPrice: 50,
-      status: "Confirmed",
-    };
+    // const mockBooking = {
+    //   id: Date.now().toString(),
+    //   destination,
+    //   checkIn: new Date(),
+    //   checkOut: new Date(),
+    //   guests: 2,
+    //   rooms: 1,
+    //   totalPrice: 50,
+    //   status: "Confirmed",
+    // };
 
     setBookingData(finalBookingDetails);
     // In a real app, this would be `addBooking(mockBooking)`

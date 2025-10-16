@@ -2,52 +2,79 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation"; // Use Next.js hooks
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image"; // Use Next.js Image component
-import Header from "@/components/Header"; // Assuming Header is fixed and reusable
-import Footer from "@/components/Footer"; // Assuming Footer is fixed and reusable
-import { ArrowLeft, Star, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button"; // Assuming Button component exists
-
-// FIX: Import the exact data structure and data source
+import Image from "next/image";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import {
+  ArrowLeft,
+  Bookmark,
+  Calendar,
+  MapPin,
+  Phone,
+  Clock,
+  Star,
+  Timer,
+  UtensilsCrossed,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { restaurants, Restaurant } from "@/lib/data/restaurants";
-import { useBooking } from "@/context/BookingContext"; // Use BookingContext to set destination
+import { useBooking } from "@/context/BookingContext";
 
 export default function VenueDetailsPage() {
-  const { id } = useParams() as { id: string }; // Use Next.js useParams hook
+  // --- SETUP ---
+  const { id } = useParams() as { id: string };
   const router = useRouter();
   const { setBookingData } = useBooking();
-  const golden = "#BC995D";
+  const golden = "#eec212";
   const deepBlue = "#0E1A2B";
-  const [lang, setLang] = useState<"EN" | "BG">("EN"); // State for Header
+  const [lang, setLang] = useState<"EN" | "BG">("EN");
 
+  // --- LOCAL UI STATE ---
+  const [selectedTime, setSelectedTime] = useState<string | null>("19:00");
+  const [activeTab, setActiveTab] = useState("overview");
+  const [localBookingData, setLocalBookingData] = useState({
+    time: "7:00pm", // Default for the dropdown
+    date: "2025-10-05", // Mock date
+    guests: 2,
+  });
+  const timeSlots = ["19:00", "19:15", "19:30", "19:45", "20:00", "20:15"];
+
+  // --- DATA FETCHING ---
   const venue: Restaurant | undefined = useMemo(() => {
-    // Find the venue, converting the ID from the data (number) to a string for comparison
     return restaurants.find((r) => String(r.id) === id);
   }, [id]);
 
-  const handleBookNowClick = () => {
-    if (venue) {
-      // 5. Set the destination in the context and navigate to the booking page
-      setBookingData({
-        destination: {
-          id: String(venue.id),
-          title: venue.name,
-          image: venue.image,
-          location: venue.location,
-          rating: venue.rating,
-          reviews: 100, // Mocked reviews count
-          price: 50, // Mocked price number
-          duration: "2 hours",
-          description: venue.neighborhood,
-          amenities: [],
-          included: [],
-          category: venue.cuisine,
-        },
-      });
-      router.push("/booking");
+  const handleBooking = () => {
+    if (!venue || !selectedTime) {
+      alert("Please select an available time slot.");
+      return;
     }
+
+    setBookingData({
+      destination: {
+        id: String(venue.id),
+        title: venue.name,
+        image: venue.image,
+        location: venue.location,
+        rating: venue.rating,
+        reviews: 100,
+        price: Number(venue.price.replace("₺", "").trim()) || 50,
+        duration: "2 hours",
+        description: venue.neighborhood,
+        amenities: [],
+        included: [],
+        category: venue.cuisine,
+      },
+      time: selectedTime,
+      guests: localBookingData.guests,
+      totalPrice:
+        Number(venue.price.replace("₺", "").trim()) * localBookingData.guests,
+      checkIn: new Date(),
+    });
+    router.push("/booking");
   };
 
   if (!venue) {
@@ -63,93 +90,396 @@ export default function VenueDetailsPage() {
     );
   }
 
+  const venuePriceNumber = Number(venue.price.replace("₺", "").trim()) || 50;
+  const priceRangeText = `${(venuePriceNumber * 0.9).toFixed(0)}€-${(
+    venuePriceNumber * 1.1
+  ).toFixed(0)}€`;
+  const priceRangeBGN = `${(venuePriceNumber * 1.9).toFixed(0)}лв-${(
+    venuePriceNumber * 2.2
+  ).toFixed(0)}лв`;
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: deepBlue }}>
-      <Header lang={lang} setLang={setLang} isTransparent={false} />
+      {/* 2. STICKY TRANSPARENT HEADER */}
+      <header className="sticky top-0 z-50 bg-black/50 backdrop-blur-sm">
+        <Header lang={lang} setLang={setLang} isTransparent={true} />
+      </header>
 
-      <section className="max-w-[1200px] mx-auto px-6 py-10 text-white">
-        {/* Back Link */}
-        <Link
-          href="/explore"
-          className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Search Results
-        </Link>
+      {/* Hero Image */}
+      <div className="relative h-[541px] w-full -mt-[95px]">
+        {" "}
+        {/* Negative margin pulls it up under the sticky header */}
+        <Image
+          src={venue.image} // Use dynamic image from data
+          alt="Restaurant view"
+          fill
+          className="w-full h-full object-cover"
+        />
+        <button className="absolute top-[100px] right-10 md:right-32 lg:right-40 text-white hover:text-golden transition-colors z-20">
+          <Bookmark className="w-6 h-8" />
+        </button>
+      </div>
 
-        {/* Hero Image */}
-        <div className="rounded-2xl overflow-hidden mb-6 border border-white/20 shadow-2xl">
-          <div className="relative w-full h-[420px]">
-            <Image
-              src={venue.image}
-              alt={venue.name}
-              fill
-              className="object-cover"
-            />
-          </div>
-        </div>
+      {/* Main Content */}
+      <div className="relative -mt-32 rounded-t-[50px] bg-gradient-to-br from-[#0A1E3C] via-[#0E1A2B] to-[#064194] pb-20 overflow-hidden">
+        <div className="container mx-auto px-4 lg:px-16 pt-10">
+          {/* --- TOP ROW: NAME/DETAILS and BOOKING WIDGET --- */}
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
+            {/* Left: Main Info Block (Flex to take remaining space) */}
+            <div className="flex-1 space-y-6 min-w-0">
+              {/* Back Link */}
+              <Link
+                href="/explore"
+                className="inline-flex items-center gap-2 text-white/80 hover:text-white"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to Search Results
+              </Link>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Main Info */}
-          <div className="md:col-span-2">
-            <h1 className="text-3xl font-bold mb-2">{venue.name}</h1>
+              {/* Title Block */}
+              <div className="space-y-6">
+                <h1 className="text-5xl md:text-6xl text-white font-normal">
+                  {venue.name}
+                </h1>
 
-            {/* Rating & Location */}
-            <div className="flex items-center gap-2 text-white/90 mb-3">
-              <Star className="w-5 h-5 text-green-500 fill-green-500" />
-              <span>{venue.rating}</span>
-              <span className="mx-2">•</span>
-              <MapPin className="w-4 h-4" />
-              <span>{venue.location}</span>
-            </div>
+                <div className="flex items-center gap-4 flex-wrap">
+                  <p className="text-xl text-white">
+                    {venue.cuisine} <span className="text-white/50">$$$$</span>
+                  </p>
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-[#125604]">
+                    <Star className="w-4 h-4 fill-white text-white" />
+                    <span className="text-sm text-[#5F5]">
+                      {venue.rating} <span className="text-[10px]">(2.5k)</span>
+                    </span>
+                  </div>
+                </div>
 
-            {/* Cuisine & Neighborhood (used as description placeholder) */}
-            <p className="text-white/80">
-              {venue.cuisine} — {venue.neighborhood}
-            </p>
+                <div className="space-y-4">
+                  <p className="text-4xl text-white">{priceRangeText}</p>
+                  <p className="text-base text-white/75">{priceRangeBGN}</p>
+                </div>
 
-            {/* Additional details (mock) */}
-            <div className="mt-8 space-y-4">
-              <h2 className="text-xl font-semibold">About</h2>
-              <p className="text-white/70">
-                This venue specializes in {venue.cuisine} and is known as the{" "}
-                {venue.neighborhood}. Experience our {venue.price} range in a
-                setting designed for memorable occasions.
-              </p>
-
-              <h2 className="text-xl font-semibold pt-4">Opening Hours</h2>
-              <p className="text-white/70">Daily: 5:00 PM - 2:00 AM</p>
-            </div>
-          </div>
-
-          {/* Booking Widget Placeholder */}
-          <div className="bg-black/30 rounded-xl border border-white/20 p-5 backdrop-blur">
-            <h3 className="font-semibold mb-4 text-xl">Book Your Table</h3>
-
-            {/* Available Times */}
-            <h4 className="font-semibold mb-3 text-sm">Available times</h4>
-            <div className="flex flex-wrap gap-2 mb-6">
-              {venue.tags.map((t, i) => (
-                <span
-                  key={i}
-                  className="px-3 py-1 rounded text-sm font-medium"
+                <div
+                  className="inline-flex px-3 py-1 rounded-md border border-white/50"
                   style={{ backgroundColor: golden, color: deepBlue }}
                 >
-                  {t}
-                </span>
-              ))}
+                  <span className="text-sm text-white font-medium">
+                    2 km away
+                  </span>
+                </div>
+
+                <p className="text-base text-white">
+                  34 Person Currently Watching
+                </p>
+              </div>
             </div>
 
-            {/* Book Now Button */}
-            <Button
-              onClick={handleBookNowClick}
-              className="w-full py-3 rounded-md font-medium hover:brightness-105"
-              style={{ backgroundColor: golden, color: deepBlue }}
-            >
-              Book Now
-            </Button>
+            {/* Right: Booking Widget (Shrink to fit content) */}
+            <div className="w-full lg:w-fit sticky lg:top-[100px] max-w-sm mx-auto lg:mx-0 lg:max-w-none">
+              {/* <div className="relative z-10 flex flex-col gap-3 p-4 rounded-2xl border border-white/50 ring-1 ring-white/30 bg-gradient-to-b from-[#213C62]/60 to-black/60 backdrop-blur-lg shadow-2xl"> */}
+              {/* Booking Form Controls (Dropdowns for Time/Guests, Date Input) */}
+              <div className="flex flex-col gap-4 p-4 rounded-lg border border-white/50 bg-white/10 backdrop-blur-sm">
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-7 h-7 text-white flex-shrink-0" />
+
+                  <div className="grid grid-cols-3 gap-4 w-full">
+                    {/* Time */}
+                    <div>
+                      <p className="text-[10px] text-white/50 mb-1">Time</p>
+                      <select
+                        aria-label="Select time"
+                        value={localBookingData.time}
+                        onChange={(e) =>
+                          setLocalBookingData((s) => ({
+                            ...s,
+                            time: e.target.value,
+                          }))
+                        }
+                        className="w-full bg-transparent text-white font-medium border border-white/40 rounded-md px-2 py-1 focus:outline-none"
+                      >
+                        {timeSlots.map((t) => (
+                          <option key={t} value={t} className="text-black">
+                            {t}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* Date */}
+                    <div>
+                      <p className="text-[10px] text-white/50 mb-1">Date</p>
+                      <input
+                        type="date"
+                        aria-label="Select date"
+                        onChange={(e) =>
+                          setLocalBookingData((s) => ({
+                            ...s,
+                            date: e.target.value,
+                          }))
+                        }
+                        className="w-full bg-transparent text-white font-medium border border-white/40 rounded-md px-2 py-1 focus:outline-none [color-scheme:dark]"
+                      />
+                    </div>
+                    {/* Guests */}
+                    <div>
+                      <p className="text-[10px] text-white/50 mb-1">Guests</p>
+                      <select
+                        aria-label="Select guests"
+                        value={localBookingData.guests}
+                        onChange={(e) =>
+                          setLocalBookingData((s) => ({
+                            ...s,
+                            guests: Number(e.target.value),
+                          }))
+                        }
+                        className="w-full bg-transparent text-white font-medium border border-white/40 rounded-md px-2 py-1 focus:outline-none"
+                      >
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map(
+                          (g) => (
+                            <option key={g} value={g} className="text-black">
+                              {g}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Book Button */}
+                <Button
+                  onClick={handleBooking}
+                  className="w-full py-3 rounded-lg border border-white bg-golden hover:bg-golden/90 text-white font-medium text-sm transition-colors"
+                  style={{ backgroundColor: golden, color: deepBlue }}
+                >
+                  Book a Table
+                </Button>
+
+                {/* Time Slots Widget */}
+                <div className="space-y-3 p-2">
+                  <div className="flex items-center gap-3">
+                    <p className="text-white font-medium">Select a Time</p>
+                    <span className="px-3 py-1 rounded-md bg-red-600/50 text-[#FF5656] text-sm">
+                      19:59:43
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2 flex-wrap">
+                    {timeSlots.map((time) => (
+                      <button
+                        key={time}
+                        onClick={() => setSelectedTime(time)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-md border border-white/50 text-sm shadow-lg transition-colors",
+                          selectedTime === time
+                            ? "bg-golden text-white"
+                            : "bg-[#213C62] text-[#F4F4F4] hover:bg-golden/30"
+                        )}
+                        style={{
+                          backgroundColor:
+                            selectedTime === time ? golden : "#213C62",
+                        }}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex flex-col gap-2 pt-2 text-white text-sm">
+                    <button className="px-4 py-2 rounded-md border border-white/50 bg-white/10 hover:bg-white/20">
+                      Notify me
+                    </button>
+                    <div className="flex items-center gap-2">
+                      <Timer className="w-5 h-5" style={{ color: golden }} />
+                      <span>You're in Luck! we still have 4 time slots</span>
+                    </div>
+                  </div>
+                </div>
+                {/* </div> */}
+              </div>
+            </div>
+          </div>
+
+          {/* --- SECOND ROW: TABS & CONTENT --- */}
+          <div className="w-full space-y-12">
+            {/* Tabs (Horizontal Navigation) */}
+            <div className="border-b border-[#7A7A7A] overflow-x-auto">
+              <div className="flex gap-4 md:gap-8 min-w-max">
+                {[
+                  "Overview",
+                  "Experiences",
+                  "Private Dinning",
+                  "Offers",
+                  "Ask Concierge",
+                  "Photos",
+                  "Menu",
+                  "Reviews",
+                  "Details",
+                ].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab.toLowerCase())}
+                    className={cn(
+                      "pb-2 text-base whitespace-nowrap transition-colors",
+                      activeTab === tab.toLowerCase()
+                        ? "text-[#F4F4F4] border-b-2 border-[#F4F4F4] font-medium"
+                        : "text-[#7A7A7A]"
+                    )}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* --- TAB CONTENT: OVERVIEW (Default) --- */}
+            <div className="space-y-6">
+              <div className="flex flex-wrap gap-3">
+                <span className="px-4 py-1 rounded-md border border-white/50 text-white text-sm">
+                  Good for Group
+                </span>
+                <span className="px-4 py-1 rounded-md border border-white/50 text-white text-sm">
+                  Neighborhood gem
+                </span>
+              </div>
+
+              <p className="text-base text-white/60 leading-relaxed">
+                Lorem Ipsum is simply dummy text of the printing and typesettin
+                Lorem Ipsum is simply dummy text of the printing and
+                typesettinLorem Ipsum is simply dummy text of the printing and
+                typesettinLorem Ipsum is simply dummy text of the printing and
+                typesettinLorem Ipsum is simply dummy text of the printing and
+                typesettin
+              </p>
+            </div>
+
+            {/* Details Section (Moved down) */}
+            <div className="space-y-6">
+              <h2 className="text-xl text-white font-medium">Details</h2>
+
+              <div className="space-y-5 pl-8">
+                <div className="flex items-start gap-4">
+                  <MapPin
+                    className="w-6 h-6 flex-shrink-0 mt-1"
+                    style={{ color: golden }}
+                  />
+                  <div>
+                    <p className="text-sm text-white/60">Location</p>
+                    <p className="text-lg text-white/60">{venue.location}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <Clock
+                    className="w-6 h-6 flex-shrink-0 mt-1"
+                    style={{ color: golden }}
+                  />
+                  <div>
+                    <p className="text-sm text-white/60">Hours of Operation</p>
+                    <p className="text-lg text-white/60">
+                      Daily 5:00 pm–2:00 am
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <UtensilsCrossed
+                    className="w-6 h-6 flex-shrink-0 mt-1"
+                    style={{ color: golden }}
+                  />
+                  <div>
+                    <p className="text-sm text-white/60">Cusine</p>
+                    <p className="text-lg text-white/60">{venue.cuisine}</p>
+                  </div>
+                </div>
+
+                {/* Mock/Placeholder details block */}
+                <div className="flex items-start gap-4">
+                  <Phone
+                    className="w-6 h-6 flex-shrink-0 mt-1 rotate-90"
+                    style={{ color: golden }}
+                  />
+                  <div>
+                    <p className="text-sm text-white/60">Phone no.</p>
+                    <p className="text-lg text-white/60">+140 345 678</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Photos Section */}
+            <div className="space-y-4">
+              <h2 className="text-xl text-white font-medium">Photos</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/1d1ed3e5f70e1e1a250f33074a94e7525868cae5?width=523"
+                  alt="Restaurant"
+                  className="rounded-lg w-full h-64 object-cover md:col-span-2 md:row-span-2"
+                />
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/3e223fd226de422eaef54e9cf6c1cf8a34bd8de1?width=242"
+                  alt="Food"
+                  className="rounded-lg w-full h-32 object-cover"
+                />
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/d7c68600d92c8c7efd2b93dabe2e9b998de9b49d?width=149"
+                  alt="Drink"
+                  className="rounded-lg w-full h-32 object-cover"
+                />
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/ade224f646b752d71ed32640da7514aed6cea408?width=149"
+                  alt="Dessert"
+                  className="rounded-lg w-full h-32 object-cover"
+                />
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/b63f788297e6e4ed951eadcf9df62c0f25c65534?width=242"
+                  alt="Interior"
+                  className="rounded-lg w-full h-32 object-cover"
+                />
+                <div className="relative rounded-lg w-full h-32 overflow-hidden">
+                  <img
+                    src="https://api.builder.io/api/v1/image/assets/TEMP/86e48b0818b4e1c264eb6d5ac4f35aee12006b22?width=149"
+                    alt="More"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/50 flex items-end justify-center pb-3">
+                    <span className="text-white/65 text-xs">
+                      10 + More Images
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Reviews Section */}
+            <div className="mt-16 space-y-12 w-full">
+              <h2 className="text-4xl text-[#F4F4F4] font-normal">
+                Latest reviews
+              </h2>
+              <div className="grid md:grid-cols-2 gap-12">
+                {[1, 2, 3].map((review) => (
+                  <div
+                    key={review}
+                    className="p-6 rounded-lg border border-white/50 bg-white/10 backdrop-blur-sm space-y-6"
+                  >
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className="w-5 h-5"
+                          style={{ color: golden, fill: golden }}
+                          strokeWidth={2}
+                        />
+                      ))}
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-2xl text-[#F4F4F4] font-bold">
+                        Review title
+                      </h3>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
       <Footer />
     </div>
