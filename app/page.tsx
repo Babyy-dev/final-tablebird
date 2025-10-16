@@ -218,20 +218,20 @@ export default function Index() {
           </div>
 
           {/* Booking Form - functional */}
-          <div className="w-full max-w-[664px] p-6 md:p-8 rounded-2xl border border-white bg-gradient-to-b from-[rgba(33,60,98,0.55)] to-[rgba(0,0,0,0.55)] shadow-md backdrop-blur-md">
-            <h3 className="text-white text-base font-medium mb-4">
+          <div className="w-full max-w-[900px] p-6 md:p-8 rounded-2xl border border-[#D9D9D9] bg-gradient-to-b from-[rgba(33,60,98,0.55)] to-[rgba(0,0,0,0.55)] shadow-md backdrop-blur-md">
+            <h3 className="text-white text-base font-medium mb-4 px-3">
               Book a Table
             </h3>
             <div className="flex flex-wrap items-end gap-6 md:gap-10">
               <div className="flex-1 min-w-[140px]">
-                <label className="text-white/50 text-xs mb-1 block">
+                <label className="text-white/50 text-xs mb-1 px-3">
                   Location
                 </label>
                 <div className="relative">
                   <select
                     value={loc}
                     onChange={(e) => setLoc(e.target.value)}
-                    className="w-full appearance-none bg-transparent text-white border border-white/40 rounded-md px-3 py-2 pr-8"
+                    className="w-full appearance-none bg-transparent text-white rounded-md px-3 py-2 pr-8"
                   >
                     {uniqueLocations.map((c) => (
                       <option key={c} value={c} className="text-black">
@@ -239,7 +239,7 @@ export default function Index() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-white absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
               <div className="h-7 w-px bg-white/30 hidden md:block"></div>
@@ -249,7 +249,7 @@ export default function Index() {
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-transparent text-white border border-white/40 rounded-md px-3 py-2"
+                  className="w-full bg-transparent text-white  rounded-md px-3 py-2"
                   style={{ colorScheme: "dark" }}
                 />
               </div>
@@ -262,7 +262,7 @@ export default function Index() {
                   <select
                     value={guests}
                     onChange={(e) => setGuests(parseInt(e.target.value))}
-                    className="w-full appearance-none bg-transparent text-white border border-white/40 rounded-md px-3 py-2 pr-8"
+                    className="w-full appearance-none bg-transparent text-white rounded-md px-3 py-2 pr-8"
                   >
                     {Array.from({ length: 12 }).map((_, i) => (
                       <option key={i + 1} value={i + 1} className="text-black">
@@ -270,7 +270,7 @@ export default function Index() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-white absolute right-25 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
               <Link

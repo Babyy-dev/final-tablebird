@@ -6,6 +6,7 @@ import "./globals.css";
 // Import the providers
 import { BookingProvider } from "@/context/BookingContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import MobileNavBar from "@/components/MobileNavBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +37,10 @@ export default function RootLayout({
         style={{ backgroundColor: "#0E1A2B", color: "#ededed" }}
       >
         <LanguageProvider>
-          <BookingProvider>{children}</BookingProvider>
+          <BookingProvider>
+            <div className="pb-20 lg:pb-0">{children}</div>
+            <MobileNavBar />
+          </BookingProvider>
         </LanguageProvider>
       </body>
     </html>
