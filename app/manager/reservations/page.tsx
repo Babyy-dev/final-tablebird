@@ -33,8 +33,6 @@ const mockReservations = [
 ];
 
 export default function VenueReservationsPage() {
-  const golden = "#D4A853";
-
   return (
     <DashboardLayout requiredRole="venue-manager">
       <h1 className="text-3xl font-bold text-white mb-6">Reservations</h1>

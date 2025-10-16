@@ -4,7 +4,6 @@ import { Twitter, Instagram, Facebook, Linkedin } from "lucide-react";
 import React from "react";
 
 export default function Footer() {
-  const golden = "#D4A853";
   const t = (key: string) => key; // Mock translation function
 
   const navGroups = [

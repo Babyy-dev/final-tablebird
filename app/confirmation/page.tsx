@@ -23,7 +23,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function ConfirmationPage() {
   const router = useRouter();
-  const { userBookings, clearBooking } = useBooking();
+  const { userBookings } = useBooking();
   const golden = "#D4A853";
   const navyDark = "#0E1A2B";
 
@@ -166,7 +166,7 @@ export default function ConfirmationPage() {
                   {/* Who's Going */}
                   <div className="space-y-2.5">
                     <h3 className="text-white text-base font-medium tracking-[0.024px]">
-                      Who's Going
+                      Who Going
                     </h3>
                     <div className="flex items-start gap-8">
                       {/* Placeholder for Sofia/Kevin */}

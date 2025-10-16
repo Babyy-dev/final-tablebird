@@ -2,7 +2,7 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import { Destination } from "@/lib/data/destinations"; // Use shared interface
+import { Destination } from "@/lib/data/destinations";
 
 interface BookingData {
   destination: Destination | null;
@@ -14,9 +14,12 @@ interface BookingData {
   seating: string | null;
 }
 
-interface User {
+// FIX: Updated User interface to include 'type' and optional 'restaurantName'
+export interface User {
   name: string;
   email: string;
+  type: "customer" | "admin" | "venue-manager";
+  restaurantName?: string;
 }
 
 interface BookingContextType {
@@ -41,10 +44,12 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     seating: null,
   });
 
-  // Mock User/Bookings
+  // FIX: Updated mock user to include the default 'type'
   const [user] = useState<User | null>({
     name: "Sofia",
     email: "sofia@example.com",
+    type: "customer", // Default role set
+    restaurantName: undefined,
   });
   const [userBookings, setUserBookings] = useState<any[]>([]);
 

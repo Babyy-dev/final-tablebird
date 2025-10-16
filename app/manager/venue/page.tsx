@@ -30,7 +30,7 @@ export default function VenueManagementPage() {
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
             <CardDescription className="text-gray-400">
-              Update your restaurant's details and contact info.
+              Update your restaurants details and contact info.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

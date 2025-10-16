@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Star, Heart, Calendar } from "lucide-react";
+import { MapPin, Heart, Calendar } from "lucide-react";
 import React from "react";
 // Interface should be pulled from your lib/data/destinations.ts file
 interface Destination {

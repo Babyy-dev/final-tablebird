@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { MapPin, ChevronRight, X } from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
 import {
   Sheet,
   SheetContent,

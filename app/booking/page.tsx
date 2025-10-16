@@ -20,7 +20,7 @@ import Image from "next/image";
 
 export default function BookingPage() {
   const router = useRouter();
-  const { bookingData, setBookingData, user } = useBooking();
+  const { bookingData, setBookingData } = useBooking();
   const golden = "#D4A853";
   const [selectedSeating, setSelectedSeating] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("+49 125 456 3");
@@ -155,7 +155,7 @@ export default function BookingPage() {
                 style={{ backgroundColor: "#A0522D" }}
               >
                 <span className="text-white text-base tracking-[0.08px]">
-                  We're holding this table for you for{" "}
+                  We are holding this table for you for{" "}
                   <span className="font-medium">
                     {formatTime(timeRemaining)}
                   </span>
@@ -214,7 +214,7 @@ export default function BookingPage() {
               {/* Diner's Details (Simplified - assumed pre-filled from user) */}
               <div className="space-y-4">
                 <h2 className="text-white text-xl font-medium tracking-[0.03px]">
-                  Diner's Details
+                  Dinner Details
                 </h2>
                 {/* Phone Input */}
                 <div className="flex items-center gap-5 px-5 py-3 rounded-[10px] border border-white bg-white/10 backdrop-blur-sm">

@@ -80,7 +80,7 @@ export default function Header({
           {/* Language Toggle */}
           <button
             onClick={() => setLang(lang === "EN" ? "BG" : "EN")}
-            role="switch"
+            // role="switch"
             className="relative w-[86px] h-[45px] rounded-[50px] border border-white bg-black/20 shadow-md cursor-pointer transition-colors"
             style={{ backgroundColor: "rgba(14, 26, 43, 0.4)" }}
           >

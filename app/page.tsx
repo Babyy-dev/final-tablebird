@@ -3,7 +3,6 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Search,
@@ -23,7 +22,6 @@ import Header from "@/components/Header";
 
 export default function Index() {
   const golden = "#BC995D"; // Assuming this is the correct gold from your latest CSS
-  const router = useRouter();
 
   // Header state (passed to Header component)
   const [lang, setLang] = useState<"EN" | "BG">("EN");
@@ -180,13 +178,13 @@ export default function Index() {
     },
   ];
 
-  function onSearch() {
-    router.push(
-      `/search?loc=${encodeURIComponent(loc)}&date=${encodeURIComponent(
-        date
-      )}&guests=${guests}`
-    );
-  }
+  // function onSearch() {
+  //   router.push(
+  //     `/search?loc=${encodeURIComponent(loc)}&date=${encodeURIComponent(
+  //       date
+  //     )}&guests=${guests}`
+  //   );
+  // }
 
   return (
     <div
@@ -290,7 +288,7 @@ export default function Index() {
       {/* What's Your Best Dine Time */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-14 py-10">
         <h2 className="text-[34px] font-normal mb-10">
-          What's Your Best Dine Time!
+          Whats Your Best Dine Time!
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {timeCategories.map((category, index) => (
@@ -417,7 +415,7 @@ export default function Index() {
             Top Restaurant This Week
           </h2>
           <p className="text-white/50 text-base font-medium">
-            Explore what's popular with other diners with these lists, updated
+            Explore whats popular with other diners with these lists, updated
             weekly.
           </p>
         </div>
@@ -517,7 +515,7 @@ export default function Index() {
         <div className="mb-8">
           <h2 className="text-[34px] font-normal mb-2">Ask for Suggestion</h2>
           <p className="text-white/80 text-base font-medium">
-            Can't decide where to go? Let us help you!
+            Cant decide where to go? Let us help you!
           </p>
         </div>
         <div className="max-w-2xl mx-auto flex gap-4">

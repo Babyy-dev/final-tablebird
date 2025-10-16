@@ -1,10 +1,8 @@
 // components/RestaurantCard.tsx
 "use client";
 
-import Image from "next/image";
-import { Star, MapPin, Tag, Bookmark } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import React from "react";
-import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 // Use the exact props structure from the data file

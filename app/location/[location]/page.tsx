@@ -2,10 +2,10 @@
 "use client";
 
 import { useState, useRef, useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, MapPin, Check, X, ArrowLeft } from "lucide-react";
+import { Star, MapPin, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Mock data (same as used in the original LocationPage.tsx)

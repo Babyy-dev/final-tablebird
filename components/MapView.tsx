@@ -3,7 +3,7 @@
 
 import React, { useMemo } from "react";
 import Image from "next/image";
-import { X, Star, MapPin } from "lucide-react";
+import { X, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { RestaurantCardProps } from "./RestaurantCard";
