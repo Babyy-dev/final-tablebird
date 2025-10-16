@@ -23,7 +23,7 @@ export default function Header({
   setLang,
   isTransparent = true,
 }: HeaderProps) {
-  const golden = "#BC995D";
+  const golden = "#D4AF37";
   const router = useRouter();
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [currentLocation, setCurrentLocation] = useState("Sofia");

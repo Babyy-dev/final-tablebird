@@ -1,7 +1,7 @@
 // app/search/page.tsx
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { destinations } from "@/lib/data/destinations";
 import DestinationCard from "@/components/DestinationCard";
@@ -18,7 +18,8 @@ import {
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function SearchResultsPage() {
+// 1. Core logic component that uses the searchParams hook
+function SearchResultsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const golden = "#D4A853";
@@ -31,7 +32,7 @@ export default function SearchResultsPage() {
   const [sortBy, setSortBy] = useState("featured");
   const [showFilters, setShowFilters] = useState(true);
 
-  // Sync state from URL on initial load
+  // Sync state from URL on initial load (runs only client-side)
   useEffect(() => {
     const q = searchParams.get("q") || "";
     const loc = searchParams.get("loc") || "";
@@ -151,7 +152,7 @@ export default function SearchResultsPage() {
               <div>
                 <Label className="text-gray-300 mb-2">Category</Label>
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="bg-[#0A1E3C] border-gray-600 text-white">
+                  <SelectTrigger className="w-full bg-[#0A1E3C] border-gray-600 text-white">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A2E4C] border-gray-600 text-white">
@@ -187,7 +188,7 @@ export default function SearchResultsPage() {
                   value={minRating.toString()}
                   onValueChange={(val) => setMinRating(Number(val))}
                 >
-                  <SelectTrigger className="bg-[#0A1E3C] border-gray-600 text-white">
+                  <SelectTrigger className="w-full bg-[#0A1E3C] border-gray-600 text-white">
                     <SelectValue placeholder="Any Rating" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A2E4C] border-gray-600 text-white">
@@ -259,5 +260,20 @@ export default function SearchResultsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// 2. Default export wraps the functional component in Suspense for safe server/client rendering
+export default function SearchResultsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#0E1A2B] text-white text-xl">
+          Loading Search Results...
+        </div>
+      }
+    >
+      <SearchResultsPageContent />
+    </Suspense>
   );
 }

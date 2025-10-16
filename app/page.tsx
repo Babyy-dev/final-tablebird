@@ -21,7 +21,7 @@ import { destinations as allRestaurants } from "@/lib/data/destinations";
 import Header from "@/components/Header";
 
 export default function Index() {
-  const golden = "#BC995D"; // Assuming this is the correct gold from your latest CSS
+  const golden = "#D4AF37"; // Assuming this is the correct gold from your latest CSS
 
   // Header state (passed to Header component)
   const [lang, setLang] = useState<"EN" | "BG">("EN");
