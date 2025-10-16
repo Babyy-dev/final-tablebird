@@ -10,7 +10,16 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { MapPin, ChevronDown, LogIn, UserPlus } from "lucide-react";
+import {
+  MapPin,
+  ChevronDown,
+  LogIn,
+  UserPlus,
+  Utensils,
+  Star,
+  Heart,
+  GlassWater,
+} from "lucide-react";
 
 interface MobileMenuSheetProps {
   isOpen: boolean;
@@ -31,16 +40,23 @@ export function MobileMenuSheet({
 }: MobileMenuSheetProps) {
   const golden = "#D4A853";
 
+  const newNavLinks = [
+    { name: "Restaurants", href: "/Restaurants", icon: Utensils },
+    { name: "Bars", href: "/Bars", icon: GlassWater },
+    { name: "Clubs", href: "/Clubs", icon: Star },
+    { name: "Favourites", href: "/Favourites", icon: Heart },
+  ];
+
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      {/* Set side to 'right' for a typical mobile drawer */}
       <SheetContent
         side="right"
-        className="bg-[#0E1A2B] border-l border-gray-700 p-0 text-white w-3/4 sm:max-w-xs"
+        // FIX: Use w-[85%] on smaller screens to ensure it slides out completely, then max-w-xs on bigger screens.
+        className="bg-[#0E1A2B] border-l border-gray-700 p-0 text-white w-[85%] max-w-full sm:max-w-xs"
       >
         <SheetHeader className="p-4 border-b border-gray-700">
           <SheetTitle className="text-white text-xl">
-            Account & Settings
+            Account & Navigation
           </SheetTitle>
         </SheetHeader>
 
@@ -68,6 +84,29 @@ export function MobileMenuSheet({
             </Link>
           </div>
 
+          {/* New Navigation Links Section for the added tabs */}
+          <div className="pt-4 space-y-1 border-t border-gray-700">
+            <h3 className="text-sm font-semibold text-gray-400 mb-2">
+              Explore
+            </h3>
+            {newNavLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                onClick={onClose}
+                className="block"
+              >
+                <Button
+                  className="w-full justify-start gap-3 bg-transparent hover:bg-[#1A2E4C] text-white/90"
+                  variant="ghost"
+                >
+                  <link.icon className="w-5 h-5 text-white/70" />
+                  {link.name}
+                </Button>
+              </Link>
+            ))}
+          </div>
+
           {/* Location Selector */}
           <button
             onClick={() => {
@@ -93,7 +132,7 @@ export function MobileMenuSheet({
             <span className="text-white">Language</span>
             <button
               onClick={() => setLang(lang === "EN" ? "BG" : "EN")}
-              role="switch"
+              // role="switch"
               className="relative w-[70px] h-[35px] rounded-[50px] border border-white/50 bg-black/20 shadow-md cursor-pointer transition-colors"
               style={{ backgroundColor: "rgba(14, 26, 43, 0.4)" }}
             >

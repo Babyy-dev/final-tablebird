@@ -1,124 +1,335 @@
 // app/explore/page.tsx
 "use client";
 
-import { useMemo, useState, Suspense } from "react";
+import {
+  useMemo,
+  useState,
+  Suspense,
+  useRef,
+  useEffect,
+  ChangeEvent,
+} from "react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import RestaurantCard from "@/components/RestaurantCard";
 import MapView, { MapMarker } from "@/components/MapView";
-import { Input } from "@/components/ui/input";
 import { useSearchParams } from "next/navigation";
+import {
+  Calendar,
+  UtensilsCrossed,
+  Wine,
+  Disc,
+  ChevronDown,
+  Clock,
+} from "lucide-react";
 
+// --- Import the new data file and type directly ---
 import { restaurants } from "@/lib/data/restaurants";
 
-// Component that handles the core UI and logic, receiving search data as props
-interface ExploreContentProps {
-  initialTime: string;
-  initialDate: string;
-  initialGuests: number;
+// 1. Component to load initial URL search params (to avoid server/build errors)
+function SearchParamsLoader({ children }: { children: React.ReactNode }) {
+  return children;
 }
-function ExploreContent({
-  initialTime,
-  initialDate,
-  initialGuests,
-}: ExploreContentProps) {
-  const golden = "#D4A853"; // Standardized golden color
 
-  const [time, setTime] = useState(initialTime);
-  const [date, setDate] = useState(initialDate);
-  const [guests, setGuests] = useState(initialGuests);
+// 2. Core Page Component
+function ExplorePageContent() {
+  const searchParams = useSearchParams();
+  // const golden = "#D4A853";
+  // const deepBlue = "#0E1A2B";
 
+  // State initialization
+  const [time, setTime] = useState(searchParams.get("time") || "19:00");
+  const [date, setDate] = useState(
+    searchParams.get("date") || new Date().toISOString().slice(0, 10)
+  );
+  const [guests, setGuests] = useState(Number(searchParams.get("guests")) || 7);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [lang, setLang] = useState<"EN" | "BG">("EN");
+  const [showDateDropdown, setShowDateDropdown] = useState(false);
 
+  const timeRef = useRef<HTMLSelectElement>(null);
+  const guestsRef = useRef<HTMLSelectElement>(null);
+  const dateBoxRef = useRef<HTMLDivElement>(null);
+
+  // Handlers for inputs
+  const onTimeChange = (v: string) => setTime(v);
+  const onDateChange = (v: string) => setDate(v);
+  const onGuestsChange = (e: ChangeEvent<HTMLSelectElement>) =>
+    setGuests(parseInt(e.target.value, 10));
+  const openDate = () => setShowDateDropdown((s) => !s);
+
+  // Close date dropdown on outside click
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (!dateBoxRef.current) return;
+      if (!dateBoxRef.current.contains(e.target as Node))
+        setShowDateDropdown(false);
+    };
+    if (showDateDropdown) document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [showDateDropdown]);
+
+  // Markers definition
   const markers: MapMarker[] = useMemo(
-    () => restaurants.map((r) => ({ ...r, id: String(r.id), image: r.image })),
+    () =>
+      restaurants.map((r) => ({
+        id: String(r.id),
+        name: r.name,
+        rating: r.rating,
+        price: r.price,
+        cuisine: r.cuisine,
+        location: r.location,
+        image: r.image,
+        reviews: "2.5k",
+        x: r.x,
+        y: r.y,
+      })),
     []
   );
 
+  // Format date for display in the Hero bar
+  const dateLabel = useMemo(() => {
+    if (!date) return "";
+    const [y, m, d] = date.split("-");
+    return `${d}-${m}-${y}`;
+  }, [date]);
+
+  // Markers and select handlers for MapView/RestaurantCard linkage
   const handleSelect = (id: number | null) => {
     setSelectedId(id ? String(id) : null);
   };
+
+  // Mock data for filter buttons
+  const filterCategories = [
+    { icon: UtensilsCrossed, label: "Restaurant", active: true },
+    { icon: Wine, label: "Bars", active: false },
+    { icon: Disc, label: "Clubs", active: false },
+  ];
+  const filterSorts = ["Tops", "Populars"];
+
+  // Mock the countdown timer for consistency
+  const countdown = "19:59:43";
 
   return (
     <div className="min-h-screen bg-[#0E1A2B] flex flex-col">
       <Header lang={lang} setLang={setLang} isTransparent={false} />
 
-      {/* Filter Bar */}
+      {/* Hero / Filter Section */}
       <div>
-        <div className="flex-1 max-w-[800px] mx-auto px-[30px]">
-          {/* FIX: Use standardized golden color for border and inline styling for dark theme opacity */}
-          <div
-            className="w-full p-6 md:p-8 rounded-xl border"
-            style={{
-              borderColor: golden,
-              backgroundColor: "rgba(33,60,98,0.55)",
-            }}
-          >
-            <div className="flex flex-wrap items-end gap-6 md:gap-10">
-              <div className="flex-1 min-w-[120px]">
-                <label className="text-white/50 text-xs mb-1 block">Time</label>
-                <Input
-                  type="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  className="bg-transparent border-white/40 text-white"
-                />
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-[60px]">
+          {/* Title Row */}
+          <h1 className="text-gray-400 text-base md:text-[20px] mb-6 md:mb-8 flex items-baseline gap-2">
+            <span>Available now in</span>
+            <span className="text-xl md:text-[34px] text-white">Sofia</span>
+          </h1>
+
+          {/* Main Booking Bar */}
+          <div className="relative flex flex-col md:flex-row items-center gap-4 p-4 md:px-4 md:py-4 rounded-xl border border-[#D4AF37] bg-[#0E1A2B]/[0.45] backdrop-blur-[7.5px] w-lg mb-6">
+            <Calendar className="w-7 h-7 text-white flex-shrink-0 hidden sm:block" />
+
+            <div className="flex w-full justify-between items-center gap-4">
+              {/* Time Input */}
+              <div className="flex flex-col flex-1 min-w-[20%]">
+                <span className="text-[10px] text-white/50 tracking-[0.15px] mb-1">
+                  Time
+                </span>
+                <div className="relative inline-flex items-start gap-0">
+                  <select
+                    ref={timeRef}
+                    value={time}
+                    onChange={(e) => onTimeChange(e.target.value)}
+                    className="appearance-none bg-transparent text-white text-base font-medium tracking-[0.024px] focus:outline-none pr-6 w-full"
+                  >
+                    {/* Options loop */}
+                    {Array.from({ length: 48 }).map((_, i) => {
+                      const minutes = i * 30;
+                      const hh = Math.floor(minutes / 60);
+                      const mm = minutes % 60;
+                      const value = `${String(hh).padStart(2, "0")}:${
+                        mm === 0 ? "00" : "30"
+                      }`;
+                      const hour12 = ((hh + 11) % 12) + 1;
+                      const ampm = hh < 12 ? "am" : "pm";
+                      const label = `${hour12}:${
+                        mm === 0 ? "00" : "30"
+                      }${ampm}`;
+                      return (
+                        <option
+                          key={value}
+                          value={value}
+                          className="text-black"
+                        >
+                          {label}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <Clock className="w-4 h-4 rotate-90 absolute right-0 text-white/50 pointer-events-none" />
+                </div>
               </div>
-              <div className="flex-1 min-w-[140px]">
-                <label className="text-white/50 text-xs mb-1 block">Date</label>
-                <Input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="bg-transparent border-white/40 text-white"
-                />
+
+              <div className="w-px h-7 bg-white/50 hidden sm:block" />
+
+              {/* Date Input */}
+              <div
+                className="flex flex-col flex-1 min-w-[30%]"
+                ref={dateBoxRef}
+              >
+                <span className="text-[10px] text-white/50 tracking-[0.15px] mb-1">
+                  Date
+                </span>
+                <div className="relative inline-flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={openDate}
+                    className="bg-transparent text-white text-base font-medium tracking-[0.024px] focus:outline-none flex items-center gap-1"
+                  >
+                    {dateLabel}
+                    <Calendar className="w-4 h-4 text-white/50" />
+                  </button>
+                  {/* Date Dropdown/Calendar placeholder logic */}
+                  {showDateDropdown && (
+                    <div className="absolute left-0 top-[110%] z-20 w-64 max-h-64 overflow-auto rounded-lg border border-white/20 bg-black/70 backdrop-blur shadow-xl p-2">
+                      {/* Placeholder days map */}
+                      {Array.from({ length: 60 }).map((_, idx) => {
+                        const base = new Date();
+                        base.setDate(base.getDate() + idx);
+                        const yyyy = base.getFullYear();
+                        const mm = String(base.getMonth() + 1).padStart(2, "0");
+                        const dd = String(base.getDate()).padStart(2, "0");
+                        const iso = `${yyyy}-${mm}-${dd}`;
+                        const label = `${dd}-${mm}-${yyyy}`;
+                        return (
+                          <button
+                            key={iso}
+                            type="button"
+                            onClick={() => {
+                              onDateChange(iso);
+                              setShowDateDropdown(false);
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-md hover:bg-white/10 text-white ${
+                              date === iso ? "bg-white/15" : ""
+                            }`}
+                          >
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="flex-1 min-w-[120px]">
-                <label className="text-white/50 text-xs mb-1 block">
+
+              <div className="w-px h-7 bg-white/50 hidden sm:block" />
+
+              {/* Guests Input */}
+              <div className="flex flex-col flex-1 min-w-[30%]">
+                <span className="text-[10px] text-white/50 tracking-[0.15px] mb-1">
                   Guests
-                </label>
-                <Input
-                  type="number"
-                  value={guests}
-                  onChange={(e) => setGuests(Number(e.target.value))}
-                  className="bg-transparent border-white/40 text-white"
-                />
+                </span>
+                <div className="relative inline-flex items-center gap-1">
+                  <select
+                    ref={guestsRef}
+                    value={guests}
+                    onChange={onGuestsChange}
+                    className="appearance-none bg-transparent text-white text-base font-medium tracking-[0.024px] focus:outline-none pr-6 w-full"
+                  >
+                    {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                      <option key={n} value={n} className="text-black">
+                        {n.toString().padStart(2, "0")}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-4 h-4 rotate-90 absolute right-0 text-white/50 pointer-events-none" />
+                </div>
               </div>
             </div>
+
+            {/* Search Button (Full width on small screens) */}
+            {/* <Link
+              href={`/search?loc=Sofia&date=${date}&guests=${guests}&time=${time}`}
+              className={`w-full md:w-auto px-8 py-3.5 rounded-md text-white text-sm font-medium text-center transition-colors`}
+              style={{ backgroundColor: golden }}
+            >
+              Search
+            </Link> */}
+          </div>
+
+          {/* Category Filter Buttons (Row 2 in Hero component) */}
+          <div className="flex items-center gap-3 overflow-x-auto pb-4 scrollbar-hide">
+            {filterCategories.map((btn) => (
+              <button
+                key={btn.label}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md border-[0.5px] border-white text-sm font-medium tracking-wide transition-colors whitespace-nowrap ${
+                  btn.active
+                    ? "bg-white/10 text-white"
+                    : "bg-transparent text-gray-400"
+                }`}
+              >
+                <btn.icon className="w-5 h-5" />
+                {btn.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Sort Buttons (Row 3 in Hero component) */}
+          <div className="flex items-center gap-2.5 overflow-x-auto pb-4 scrollbar-hide">
+            {filterSorts.map((sort, index) => (
+              <button
+                key={sort}
+                className={`px-4 py-1.5 rounded-md border-[0.5px] border-white text-sm font-medium tracking-wide transition-colors whitespace-nowrap ${
+                  index === 0
+                    ? "bg-white/10 text-white"
+                    : "bg-transparent text-gray-400"
+                }`}
+              >
+                {sort}
+              </button>
+            ))}
           </div>
         </div>
       </div>
+      {/* End Hero / Filter Section */}
 
       {/* Main Content: List and Map */}
       <div className="flex-1">
-        <div className="max-w-[1400px] mx-auto px-[42px] py-8">
-          <div className="flex gap-6">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-[42px] py-8">
+          <div className="flex flex-col lg:flex-row gap-6">
             {/* Left Column: Restaurant List */}
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="flex-1 flex flex-wrap justify-center lg:grid lg:grid-cols-2 xl:grid-cols-2 gap-6">
               {restaurants.map((restaurant) => (
-                <RestaurantCard
+                // FIX: Ensure RestaurantCard fills its 340px width container on large screens
+                <div
                   key={restaurant.id}
-                  id={String(restaurant.id)}
-                  name={restaurant.name}
-                  rating={restaurant.rating}
-                  price={restaurant.price}
-                  cuisine={restaurant.cuisine}
-                  location={restaurant.location}
-                  neighborhood={restaurant.neighborhood}
-                  image={restaurant.image}
-                  tags={restaurant.tags}
-                  onSelect={handleSelect}
-                />
+                  className="w-full max-w-[340px] md:max-w-none"
+                >
+                  <RestaurantCard
+                    id={restaurant.id}
+                    name={restaurant.name}
+                    rating={restaurant.rating}
+                    price={restaurant.price}
+                    priceAlt="78.23лв"
+                    distance="1 km"
+                    cuisine={restaurant.cuisine}
+                    address="Street Name"
+                    bookedTimes={restaurant.id}
+                    reviews="2.5k"
+                    image={restaurant.image}
+                    location={restaurant.location}
+                    tags={restaurant.tags}
+                    countdown={countdown}
+                    onSelect={handleSelect}
+                  />
+                </div>
               ))}
             </div>
 
             {/* Right Column: Map View */}
-            <div className="hidden lg:block w-[426px]">
+            <div className="hidden lg:block lg:w-[500px] lg:shrink-0">
               <MapView
                 markers={markers}
                 selectedId={selectedId}
-                onSelect={setSelectedId}
+                // onSelect={setSelectedId}
               />
             </div>
           </div>
@@ -130,24 +341,7 @@ function ExploreContent({
   );
 }
 
-// Dedicated component to use the hook and pass initial values
-function SearchParamsLoader() {
-  const searchParams = useSearchParams();
-
-  const initialTime = searchParams.get("time") || "19:00";
-  const initialDate = searchParams.get("date") || "2025-10-05";
-  const initialGuests = Number(searchParams.get("guests")) || 7;
-
-  return (
-    <ExploreContent
-      initialTime={initialTime}
-      initialDate={initialDate}
-      initialGuests={initialGuests}
-    />
-  );
-}
-
-// Default export uses Suspense around the component that uses the hook.
+// 3. Default export wraps the content component in Suspense for safe server/client rendering
 export default function ExplorePage() {
   return (
     <Suspense
@@ -157,7 +351,9 @@ export default function ExplorePage() {
         </div>
       }
     >
-      <SearchParamsLoader />
+      <SearchParamsLoader>
+        <ExplorePageContent />
+      </SearchParamsLoader>
     </Suspense>
   );
 }

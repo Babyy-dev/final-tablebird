@@ -38,7 +38,7 @@ const MobileNavBar = () => {
         boxShadow: "0 -4px 10px rgba(0, 0, 0, 0.5)",
       }}
     >
-      <nav className="flex justify-around items-center h-20 px-4">
+      <nav className="flex justify-around items-center h-25 px-4 ">
         {navItems.map((item) => {
           const isActive = item.activePaths.some((path) =>
             pathname.startsWith(path)
