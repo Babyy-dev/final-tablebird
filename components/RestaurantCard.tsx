@@ -1,126 +1,138 @@
 "use client";
 
-import { Bookmark } from "lucide-react";
+import { Bookmark, Star } from "lucide-react";
 import React from "react";
-import { useRouter } from "next/navigation";
 
-export interface RestaurantCardProps {
-  id?: string | number;
+interface RestaurantCardProps {
   name: string;
-  rating: number;
-  price: string;
+  id: number;
+  price?: string;
+  altPrice?: string;
+  address: string;
+  cuisine?: string;
+  priceRange?: string;
   priceAlt?: string;
-  address?: string;
-  reviews: string;
-  times?: string[];
-  countdown: string;
-  cuisine: string;
-  location: string;
-  image: string;
-  tags?: string[];
+  location?: string;
+  rating?: string;
+  ratingCount?: string;
+  reviews?: string;
   distance?: string;
-  bookedTimes?: number;
-  onSelect?: (id: number | null) => void;
+  bookedCount?: number;
+  bookedTimes: number;
+  tags?: string[];
+  countdown?: string;
+  image: string;
+  times?: string[];
+  featured?: boolean;
+  className?: string;
+  onSelect?: (id: number) => void;
 }
 
-export default function RestaurantCard({
-  id,
+export function RestaurantCard({
   name,
-  rating,
-
-  price,
-  cuisine,
-  location,
+  price = "40€",
+  altPrice = "78.23лв",
+  cuisine = "Italian",
+  priceRange = "$$$",
+  location = "Street Name",
+  rating = "4.2",
+  ratingCount = "2.5k",
+  distance = "1 km away",
+  bookedCount = 4,
+  countdown = "19:59:43",
   image,
-  tags = [],
-  distance = "1.2 km away",
-  bookedTimes = 4,
-  onSelect,
+  times = ["19:00", "19:15", "19:30", "19:45"],
+  featured = false,
+  className = "",
 }: RestaurantCardProps) {
-  const router = useRouter();
-  const golden = "#D4A853";
-
-  const stringId = String(id ?? "");
-  const numberId = typeof id === "number" ? id : parseInt(stringId, 10) || 0;
-
-  const openDetails = () => router.push(`/venue/${stringId}`);
-  const handleMouseEnter = () => onSelect?.(numberId);
-  const handleMouseLeave = () => onSelect?.(null);
+  const gold = "#D4A853";
 
   return (
-    <button
-      onClick={openDetails}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className="relative w-[250px] sm:w-[315px] h-[307px] rounded-[12px] overflow-hidden border border-[#ffffff30] bg-[#0E1A2B] transition-transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-[#D4A853]"
+    <div
+      className={`relative min-w-[315px] ${
+        featured ? "h-[334px]" : "h-[307px]"
+      } rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-all duration-500 ${className}`}
+      style={{ border: `1.5px solid ${gold}` }}
     >
       {/* Background Image */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${image})`,
-        }}
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+        style={{ backgroundImage: `url('${image}')` }}
       />
 
-      {/* Info Section (with gradient background only here) */}
-      <div className="absolute bottom-0 left-2 right-2  bg-gradient-to-b from-black/20 via-black/70 to-black/90 p-4 backdrop-blur-[4px] ">
+      {/* Soft Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-[#213C62]/70 to-transparent" />
+
+      {/* Glass Info Panel */}
+      <div className="absolute left-4 bottom-0 w-[280px] rounded-lg border border-white/10 bg-[rgba(6,6,6,0.6)] backdrop-blur-md p-4 z-10">
+        {/* Top Section */}
         <div className="flex items-start justify-between mb-2">
-          <h3 className="text-white text-lg font-semibold truncate">{name}</h3>
-          <Bookmark className="w-4 h-4 text-white opacity-80 hover:text-[#D4A853]" />
-        </div>
+          <div>
+            <h3 className="text-white text-xl font-semibold leading-tight">
+              {name}
+            </h3>
 
-        <div className="text-white/70 text-xs mb-1">{distance}</div>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-white text-lg font-bold">{price}</span>
+              <span className="text-white/70 text-xs">{altPrice}</span>
+            </div>
 
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-white text-sm font-semibold">{price}</span>
-          <div className="flex items-center gap-1">
-            <svg
-              className="w-4 h-4"
-              viewBox="0 0 20 20"
-              fill="#22c55e"
-              aria-hidden="true"
-            >
-              <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.953L10 0l2.951 5.957 6.561.953-4.756 4.635 1.122 6.545z" />
-            </svg>
-            <span className="text-[#22c55e] text-xs font-semibold">
-              {rating.toFixed(1)}
-            </span>
+            <p className="text-white/60 text-xs mt-2">{distance}</p>
+          </div>
+
+          <div className="flex flex-col items-end gap-2">
+            {/* Bookmark */}
+            <button className="p-1 rounded-md border border-white/20 bg-white/10 hover:bg-white/20 transition">
+              <Bookmark className="w-4 h-4 text-white" />
+            </button>
+
+            {/* Rating & Countdown */}
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-1 bg-[#125604] text-white text-xs px-2 py-1 rounded-md">
+                <Star className="w-3.5 h-3.5 text-[#D4A853] fill-[#D4A853]" />
+                <span className="font-semibold">{rating}</span>
+                <span className="text-white/80 text-[11px]">
+                  ({ratingCount})
+                </span>
+              </div>
+
+              <div className="bg-[#9B1F1F] text-white px-2 py-1 rounded-md text-[11px]">
+                {countdown}
+              </div>
+            </div>
           </div>
         </div>
 
-        <p className="text-white/80 text-xs mb-1">
-          {cuisine} • {location}
-        </p>
+        {/* Cuisine & Location */}
+        <div className="mt-3 text-white text-sm">
+          <p className="font-medium">
+            {cuisine} {priceRange} • {location}
+          </p>
+          <p className="text-white/70 text-xs mt-1">
+            Booked {bookedCount} times today
+          </p>
+        </div>
 
-        <p className="text-white/50 text-[11px] mb-2">
-          Booked {bookedTimes} times today
-        </p>
-
-        <div className="flex flex-wrap gap-2">
-          {tags.length > 0 ? (
-            tags.map((tag, idx) => (
-              <span
-                key={idx}
-                className="px-2 py-0.5 rounded text-[11px] font-medium"
-                style={{ backgroundColor: golden, color: "#0E1A2B" }}
-              >
-                {tag}
-              </span>
-            ))
-          ) : (
-            <>
-              {["19:00", "19:15", "19:30", "19:45"].map((time, idx) => (
-                <span
-                  key={idx}
-                  className="px-2 py-0.5 rounded text-[11px] font-medium border border-[#D4A853] text-white/90"
-                >
-                  {time}
-                </span>
-              ))}
-            </>
-          )}
+        {/* Time Buttons */}
+        <div className="mt-3 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+          {times.map((t, i) => (
+            <button
+              key={i}
+              className="flex-shrink-0 px-3 py-1 rounded-xl bg-[#FFD343] text-black text-sm font-medium shadow-sm"
+            >
+              {t}
+            </button>
+          ))}
         </div>
       </div>
-    </button>
+
+      {/* Subtle Highlight Frame */}
+      <div
+        className="absolute inset-0 pointer-events-none rounded-2xl"
+        style={{
+          boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)",
+        }}
+      />
+    </div>
   );
 }

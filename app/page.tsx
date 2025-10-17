@@ -27,7 +27,7 @@ import {
 import { destinations as allRestaurants } from "@/lib/data/destinations";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import RestaurantCard from "@/components/RestaurantCard"; // Ensure this is imported
+import { RestaurantCard } from "@/components/RestaurantCard"; // Ensure this is imported
 
 // --- Component to load initial URL search params (if any)
 function SearchParamsLoader({ children }: { children: React.ReactNode }) {
@@ -359,7 +359,7 @@ function IndexContent() {
                 key={index}
                 id={index + 1}
                 name="La coco"
-                rating={4.2}
+                rating="4.2"
                 price="40€"
                 priceAlt="78.23лв"
                 distance="1 km"

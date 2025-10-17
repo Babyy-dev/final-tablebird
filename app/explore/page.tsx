@@ -11,7 +11,7 @@ import {
 } from "react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import RestaurantCard from "@/components/RestaurantCard";
+import { RestaurantCard } from "@/components/RestaurantCard";
 import MapView, { MapMarker } from "@/components/MapView";
 import { useSearchParams } from "next/navigation";
 import {
@@ -306,7 +306,7 @@ function ExplorePageContent() {
                   <RestaurantCard
                     id={restaurant.id}
                     name={restaurant.name}
-                    rating={restaurant.rating}
+                    rating="restaurant.rating"
                     price={restaurant.price}
                     priceAlt="78.23лв"
                     distance="1 km"

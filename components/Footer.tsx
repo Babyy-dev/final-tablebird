@@ -49,7 +49,11 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           {/* Social and Brand Info */}
           <div className="col-span-2 md:col-span-1 flex flex-col space-y-6">
-            <h3 className="text-xl font-bold text-white">TableBird</h3>
+            <img
+              src="/logo.png"
+              alt="TableBird Logo"
+              className="h-10 w-auto object-contain"
+            />
             <div className="flex space-x-4">
               {socialLinks.map((item, index) => (
                 <Link
