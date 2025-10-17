@@ -23,10 +23,8 @@ import {
   Clock,
 } from "lucide-react";
 
-// --- Import the new data file and type directly ---
 import { restaurants } from "@/lib/data/restaurants";
 
-// 1. Component to load initial URL search params (to avoid server/build errors)
 function SearchParamsLoader({ children }: { children: React.ReactNode }) {
   return children;
 }
@@ -47,7 +45,7 @@ function ExplorePageContent() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [lang, setLang] = useState<"EN" | "BG">("EN");
   const [showDateDropdown, setShowDateDropdown] = useState(false);
-  const [isMapVisible, setIsMapVisible] = useState(false); // Assuming you kept this from the previous fix
+  // const [isMapVisible, setIsMapVisible] = useState(false); // Assuming you kept this from the previous fix
 
   const timeRef = useRef<HTMLSelectElement>(null);
   const guestsRef = useRef<HTMLSelectElement>(null);
@@ -71,7 +69,16 @@ function ExplorePageContent() {
     return () => document.removeEventListener("mousedown", onDown);
   }, [showDateDropdown]);
 
+  const mapCenter = useMemo(
+    () => ({
+      lat: 42.6977, // Sofia Latitude (Mock location based on context)
+      lng: 23.3219, // Sofia Longitude
+    }),
+    []
+  );
+
   // Markers definition
+  // Markers definition - UPDATED for Google Maps lat/lng structure
   const markers: MapMarker[] = useMemo(
     () =>
       restaurants.map((r) => ({
@@ -83,17 +90,16 @@ function ExplorePageContent() {
         location: r.location,
         image: r.image,
         reviews: "2.5k",
-        x: r.x,
-        y: r.y,
-        priceAlt: "78.23лв", // Added for MapView rendering consistency
-        distance: "1 km", // Added for MapView rendering consistency
-        bookedTimes: 4, // Added for MapView rendering consistency
-        countdown: "19:59:43", // Added for MapView rendering consistency
+        priceAlt: "78.23лв",
+        distance: "1 km",
+        bookedTimes: 4,
+        countdown: "19:59:43",
+        lat: mapCenter.lat + (r.y - 0.5) * 0.05,
+        lng: mapCenter.lng + (r.x - 0.5) * 0.1,
       })),
-    []
+    [mapCenter]
   );
 
-  // Format date for display in the Hero bar
   const dateLabel = useMemo(() => {
     if (!date) return "";
     const [y, m, d] = date.split("-");
@@ -101,7 +107,7 @@ function ExplorePageContent() {
   }, [date]);
 
   // Markers and select handlers for MapView/RestaurantCard linkage
-  const handleSelect = (id: number | null) => {
+  const handleSelect = (id: string | number | null) => {
     setSelectedId(id ? String(id) : null);
   };
 
@@ -333,7 +339,8 @@ function ExplorePageContent() {
               <MapView
                 markers={markers}
                 selectedId={selectedId}
-                // onSelect is still passed to MapView to handle marker interaction
+                center={mapCenter}
+                onSelect={handleSelect}
               />
             </div>
           </div>

@@ -257,7 +257,7 @@ function IndexContent() {
           </div>
 
           {/* Booking Form - now responsive */}
-          <div className="w-full max-w-[664px] p-6 rounded-2xl border border-white/50 bg-gradient-to-b from-[rgba(33,60,98,0.7)] to-[rgba(0,0,0,0.7)] shadow-xl backdrop-blur-md">
+          <div className="w-full max-w-[664px] p-6 rounded-2xl border border-white/50 bg-gradient-to-b from-[rgba(58,113,190,0.7)] to-[rgba(28,28,28,0.7)] shadow-xl backdrop-blur-md">
             <h3 className="text-white text-base font-medium mb-4">
               Book a Table
             </h3>
@@ -271,7 +271,7 @@ function IndexContent() {
                   <select
                     value={loc}
                     onChange={(e) => setLoc(e.target.value)}
-                    className="w-full appearance-none bg-transparent text-white border border-white/40 rounded-md px-3 py-2 pr-8"
+                    className="w-full text-align-left appearance-none bg-transparent  rounded-md px-3 py-2 pr-4"
                   >
                     {uniqueLocations.map((c) => (
                       <option key={c} value={c} className="text-black">
@@ -279,7 +279,7 @@ function IndexContent() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-white absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
 
@@ -290,21 +290,21 @@ function IndexContent() {
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-transparent text-white border border-white/40 rounded-md px-3 py-2"
+                  className="w-full bg-transparent border-white/40 rounded-md px-3 py-2"
                   style={{ colorScheme: "dark" }}
                 />
               </div>
 
               {/* Guests Input (Takes ~50% width on mobile) */}
-              <div className="flex-1 min-w-[45%] md:min-w-[120px]">
-                <label className="text-white/50 text-xs mb-1 block">
+              <div className="flex-1 min-w-[30%] md:min-w-[120px]">
+                <label className=" text-white/50 text-xs mb-1 block">
                   Guests
                 </label>
                 <div className="relative">
                   <select
                     value={guests}
                     onChange={(e) => setGuests(parseInt(e.target.value))}
-                    className="w-full appearance-none bg-transparent text-white border border-white/40 rounded-md px-3 py-2 pr-8"
+                    className="w-full appearance-none bg-transparent text-white  rounded-md px-3 py-2 pr-8"
                   >
                     {Array.from({ length: 12 }).map((_, i) => (
                       <option key={i + 1} value={i + 1} className="text-black">
@@ -312,7 +312,7 @@ function IndexContent() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-white absolute right-20 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
 
