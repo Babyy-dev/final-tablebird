@@ -27,7 +27,8 @@ import {
 import { destinations as allRestaurants } from "@/lib/data/destinations";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { RestaurantCard } from "@/components/RestaurantCard"; // Ensure this is imported
+import { RestaurantCard } from "@/components/RestaurantCard";
+import { cn } from "@/lib/utils";
 
 // --- Component to load initial URL search params (if any)
 function SearchParamsLoader({ children }: { children: React.ReactNode }) {
@@ -69,6 +70,15 @@ function IndexContent() {
     "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80",
   ];
 
+  // --- NEW FAQ STATE ---
+  const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(null);
+
+  // Toggle function for FAQ
+  const toggleFAQ = (index: number) => {
+    setOpenFAQIndex(openFAQIndex === index ? null : index);
+  };
+  // --- END NEW FAQ STATE ---
+
   // FIX 2: Loop Logic implemented correctly using CARD_W + gap (32px for gap-8)
   const scrollNext = useCallback(() => {
     const el = sliderRef.current;
@@ -109,7 +119,7 @@ function IndexContent() {
     scrollbarWidth: "none" /* Firefox */,
   } as React.CSSProperties;
 
-  // Data Definitions (omitted for brevity)
+  // Data Definitions
   const timeCategories = [
     {
       name: "Breakfast",
@@ -155,14 +165,36 @@ function IndexContent() {
     },
   ];
   const faqItems = [
-    "Frequently Asked Question here, Question 1",
-    "Frequently Asked Question here, Question 2",
-    "Frequently Asked Question here, Question 3",
-    "Frequently Asked Question here, Question 4",
-    "Frequently Asked Question here, Question 5",
-    "Frequently Asked Question here, Question 6",
-    "Frequently Asked Question here, Question 7",
+    {
+      q: "Frequently Asked Question here, Question 1",
+      a: "This is the corresponding answer for Question 1. You can find detailed information about our services, pricing, and booking policies here.",
+    },
+    {
+      q: "Frequently Asked Question here, Question 2",
+      a: "This is the corresponding answer for Question 2. Our platform offers instant confirmation for most venue bookings, subject to real-time availability checks with the restaurant's system.",
+    },
+    {
+      q: "Frequently Asked Question here, Question 3",
+      a: "This is the corresponding answer for Question 3. We support various payment methods, including Stripe, Apple Pay, and Google Pay, ensuring a secure and seamless transaction process.",
+    },
+    {
+      q: "Frequently Asked Question here, Question 4",
+      a: "This is the corresponding answer for Question 4. You can modify or cancel your booking through your user dashboard, provided it meets the venue's cancellation policy cutoff time.",
+    },
+    {
+      q: "Frequently Asked Question here, Question 5",
+      a: "This is the corresponding answer for Question 5. Our recommendation engine uses your location, past preferences, and popularity data to suggest the best dining options for you right now.",
+    },
+    {
+      q: "Frequently Asked Question here, Question 6",
+      a: "This is the corresponding answer for Question 6. We partner only with premium venues that meet our strict quality and service standards, ensuring a luxurious experience every time.",
+    },
+    {
+      q: "Frequently Asked Question here, Question 7",
+      a: "This is the corresponding answer for Question 7. Yes, our platform is fully optimized for mobile browsing, allowing you to discover and book venues effortlessly on any device.",
+    },
   ];
+
   const howItWorksSteps = [
     {
       icon: Search,
@@ -418,7 +450,7 @@ function IndexContent() {
         </div>
       </section>
 
-      {/* Top Restaurant This Week */}
+      {/* Top Restaurant This Week (omitted for brevity) */}
       <section className="max-w-[1440px] mx-auto px-4 lg:px-14 py-8 lg:py-10">
         <div className="mb-8 lg:mb-10">
           <h2 className="text-2xl lg:text-[34px] font-normal mb-2">
@@ -522,7 +554,7 @@ function IndexContent() {
         </div>
       </section>
 
-      {/* Ask for Suggestion */}
+      {/* Ask for Suggestion (omitted for brevity) */}
       <section className="max-w-[1440px] mx-auto px-4 lg:px-14 py-8 lg:py-10 text-center">
         <div className="mb-8">
           <h2 className="text-2xl lg:text-[34px] font-normal mb-2">
@@ -547,7 +579,7 @@ function IndexContent() {
         </div>
       </section>
 
-      {/* Discover Cuisines */}
+      {/* Discover Cuisines (omitted for brevity) */}
       <section className="max-w-[1440px] mx-auto py-8 lg:py-10">
         <div className="px-4 lg:px-16 flex justify-between items-end mb-6">
           <h2 className="text-2xl lg:text-[34px] font-normal">
@@ -608,15 +640,40 @@ function IndexContent() {
         </div>
 
         <div className="flex flex-col gap-2.5">
-          {faqItems.map((question, index) => (
+          {faqItems.map((item, index) => (
             <div
               key={index}
-              className="p-4 md:p-6 rounded-[10px] border border-white bg-white/5 backdrop-blur-[7.5px] flex items-center justify-between"
+              className="rounded-[10px] border border-white bg-white/5 backdrop-blur-[7.5px] overflow-hidden"
             >
-              <span className="text-white text-sm md:text-base font-medium flex-1">
-                {question}
-              </span>
-              <ChevronDown className="w-6 h-6 text-white rotate-0 transition-transform md:w-8 md:h-8" />
+              {/* Question/Trigger */}
+              <button
+                onClick={() => toggleFAQ(index)}
+                className="w-full p-4 md:p-6 flex items-center justify-between text-left transition-colors hover:bg-white/10"
+              >
+                <span className="text-white text-sm md:text-base font-medium flex-1">
+                  {item.q}
+                </span>
+                <ChevronDown
+                  className={cn(
+                    "w-6 h-6 text-white transition-transform duration-300 md:w-8 md:h-8",
+                    openFAQIndex === index ? "rotate-180" : "rotate-0"
+                  )}
+                />
+              </button>
+
+              {/* Answer/Content (Smooth Transition) */}
+              <div
+                className={cn(
+                  "transition-all duration-500 ease-in-out", // Added transition and duration
+                  openFAQIndex === index
+                    ? "max-h-[500px] opacity-100"
+                    : "max-h-0 opacity-0"
+                )}
+              >
+                <div className="pt-2 border-t border-white/20 p-4 md:p-6">
+                  <p className="text-white/70 text-sm md:text-base">{item.a}</p>
+                </div>
+              </div>
             </div>
           ))}
         </div>

@@ -61,7 +61,7 @@ export function RestaurantCard({
       />
 
       {/* Soft Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-[#213C62]/70 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-[#213C62]/70 to-transparent" />
 
       {/* Glass Info Panel */}
       <div className="absolute left-4 bottom-0 w-[280px] rounded-lg border border-white/10 bg-[rgba(6,6,6,0.6)] backdrop-blur-md p-4 z-10">

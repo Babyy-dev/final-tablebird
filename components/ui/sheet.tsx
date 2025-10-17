@@ -74,6 +74,10 @@ function SheetContent({
   className,
   children,
   side = "right",
+  // FIX: Explicitly set aria-describedby and aria-labelledby to undefined
+  // to prevent the Radix warning when SheetHeader/SheetTitle/SheetDescription are missing.
+  "aria-describedby": ariaDescribedby = undefined,
+  "aria-labelledby": ariaLabelledby = undefined,
   ...props
 }: SheetContentProps) {
   return (
@@ -82,6 +86,8 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(sheetVariants({ side }), className)}
+        aria-describedby={ariaDescribedby}
+        aria-labelledby={ariaLabelledby}
         {...props}
       >
         {children}

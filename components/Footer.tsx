@@ -52,8 +52,19 @@ export default function Footer() {
             <img
               src="/logo.png"
               alt="TableBird Logo"
-              className="h-10 w-auto object-contain"
+              className="h-10 w-auto object-contain "
             />
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-3 px-5 py-3 rounded-xl border border-white bg-white/10 backdrop-blur-sm w-fit">
+                <span className="text-white/95 text-xs">Powered by</span>
+                <img src="/stripe.png" alt="Stripe" className="h-5" />
+              </div>
+              <p className="text-white text-xs text-center max-w-[168px]">
+                Secured by Stripe
+                <br />
+                Premium partner Restaurants
+              </p>
+            </div>
             <div className="flex space-x-4">
               {socialLinks.map((item, index) => (
                 <Link

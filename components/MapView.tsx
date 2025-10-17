@@ -2,7 +2,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image"; // Added Image import
+import Image from "next/image";
 import { X, Star, MapPin, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -58,6 +58,18 @@ export default function MapView({
 
   const countdown = "19:59:43";
 
+  // FIX: Dynamic position calculation for the pop-up
+  const popupStyle = selected
+    ? {
+        // Position based on marker coordinates (absolute requires top/left in percent)
+        left: `${selected.x * 100}%`,
+        top: `${selected.y * 100}%`,
+        // Translate to center the card horizontally (-50%) and lift it above the marker (-100%) plus margin (-20px)
+        // The -20px is a guess for the gap between marker and card.
+        transform: "translate(-50%, -100%) translateY(-20px)",
+      }
+    : {};
+
   return (
     // FIX: Set explicit overflow-hidden
     <div className="sticky top-8 w-full h-[713px] rounded-lg bg-[#0E1A2B] overflow-hidden shadow-2xl">
@@ -69,6 +81,7 @@ export default function MapView({
           fill
           className="object-cover scale-[1.1] md:scale-[1.0] transition-transform duration-500" // FIX: Small scale factor to make it look slightly smaller/more contained
           sizes="(max-width: 1024px) 100vw, 50vw"
+          unoptimized
         />
 
         {/* 2. Markers */}
@@ -86,7 +99,7 @@ export default function MapView({
               className={cn(
                 "absolute w-3.5 h-3.5 rounded-full border-[3px] border-white transition-all -translate-x-1/2 -translate-y-1/2",
                 isSelected
-                  ? "bg-golden ring-4 ring-golden/60 scale-125 z-40" // FIX: Increased z-index
+                  ? "bg-golden ring-4 ring-golden/60 scale-125 z-40"
                   : "bg-[#22c55e] hover:scale-110 z-30"
               )}
               style={{
@@ -103,12 +116,12 @@ export default function MapView({
           );
         })}
 
-        {/* 3. Selected Restaurant Preview Card (Detailed Design) */}
+        {/* 3. Selected Restaurant Preview Card (Updated to follow marker location) */}
         {selected && (
           <div
-            // FIX 2: Anchor the card to the top right corner for *guaranteed* visibility.
-            // This prevents the card from being cut off at map edges.
-            className="absolute top-4 right-4 z-50 w-[300px] md:w-[340px] rounded-xl overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.6)] border border-white/30"
+            // FIX: Removed fixed top-4 right-4 and applied dynamic positioning via inline style
+            className="absolute z-50 w-[300px] md:w-[340px] rounded-xl overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.6)] border border-white/30 transition-transform duration-300 ease-out"
+            style={popupStyle} // Apply dynamic position and transform
           >
             {/* Image Area with Bookmark/Close */}
             <div
