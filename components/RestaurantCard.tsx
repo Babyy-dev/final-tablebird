@@ -118,7 +118,7 @@ export function RestaurantCard({
           {times.map((t, i) => (
             <button
               key={i}
-              className="flex-shrink-0 px-3 py-1 rounded-xl bg-[#FFD343] text-black text-sm font-medium shadow-sm"
+              className="flex-shrink-2 px-5 py-1 rounded-md bg-[#FFD343] text-black text-sm font-medium shadow-sm"
             >
               {t}
             </button>
