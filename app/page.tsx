@@ -491,11 +491,11 @@ function IndexContent() {
             ))}
           </div>
 
-          {/* Navigation Buttons - Fixed positioning */}
+          {/* Navigation Buttons - Positioned outside card area */}
           <button
             aria-label="Previous"
             onClick={scrollPrev}
-            className="absolute left-2 sm:left-4 lg:left-7 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
+            className="absolute -left-4 sm:-left-6 lg:-left-8 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
             style={{ backgroundColor: "rgba(14, 26, 43, 0.95)" }}
           >
             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -503,7 +503,7 @@ function IndexContent() {
           <button
             aria-label="Next"
             onClick={scrollNext}
-            className="absolute right-2 sm:right-4 lg:right-7 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
+            className="absolute -right-4 sm:-right-6 lg:-right-8 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
             style={{ backgroundColor: "rgba(14, 26, 43, 0.95)" }}
           >
             <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -720,11 +720,11 @@ function IndexContent() {
               ))}
             </div>
           </div>
-          {/* Navigation Arrows - Now functional */}
+          {/* Navigation Arrows - Positioned outside card area */}
           <button
             onClick={scrollCuisinePrev}
             aria-label="Previous Cuisine"
-            className="absolute left-2 sm:left-4 lg:left-7 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
+            className="absolute -left-4 sm:-left-6 lg:-left-8 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
             style={{ backgroundColor: "rgba(14, 26, 43, 0.95)" }}
           >
             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -732,7 +732,7 @@ function IndexContent() {
           <button
             onClick={scrollCuisineNext}
             aria-label="Next Cuisine"
-            className="absolute right-2 sm:right-4 lg:right-7 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
+            className="absolute -right-4 sm:-right-6 lg:-right-8 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
             style={{ backgroundColor: "rgba(14, 26, 43, 0.95)" }}
           >
             <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
