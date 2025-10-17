@@ -39,6 +39,7 @@ function SearchParamsLoader({ children }: { children: React.ReactNode }) {
 function IndexContent() {
   const router = useRouter();
   const golden = "#D4A853";
+  const navyDark = "#0E1A2B";
 
   // Header state
   const [lang, setLang] = useState<"EN" | "BG">("EN");
@@ -58,10 +59,11 @@ function IndexContent() {
   );
   const [guests, setGuests] = useState<number>(2);
 
-  // Carousel Logic (ADJUSTED CARD_W)
+  // Carousel Logic (ADJUSTED CARD_W) - Auto-scroll disabled
   const sliderRef = useRef<HTMLDivElement | null>(null);
-  const [auto, setAuto] = useState(true);
+  const cuisineSliderRef = useRef<HTMLDivElement | null>(null); // New ref for cuisine carousel
   const CARD_W = 340; // FIX 1: Stretched card width to 340px
+  const CUISINE_CARD_W = 315; // Width for cuisine cards
   const restaurantImages = [
     "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80",
     "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&q=80",
@@ -73,45 +75,124 @@ function IndexContent() {
   // --- NEW FAQ STATE ---
   const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(null);
 
+  // Top Restaurant save states
+  const [savedRestaurants, setSavedRestaurants] = useState<{
+    [key: string]: boolean;
+  }>({});
+
   // Toggle function for FAQ
   const toggleFAQ = (index: number) => {
     setOpenFAQIndex(openFAQIndex === index ? null : index);
   };
+
+  // Save function for top restaurants
+  const toggleRestaurantSave = (
+    col: number,
+    item: number,
+    e: React.MouseEvent
+  ) => {
+    e.stopPropagation();
+    const key = `${col}-${item}`;
+    setSavedRestaurants((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
   // --- END NEW FAQ STATE ---
 
-  // FIX 2: Loop Logic implemented correctly using CARD_W + gap (32px for gap-8)
+  // Enhanced scroll functions with smooth navigation
   const scrollNext = useCallback(() => {
     const el = sliderRef.current;
     if (!el) return;
-    const scrollDistance = CARD_W + 32;
-    const max = el.scrollWidth - el.clientWidth;
 
-    if (el.scrollLeft + scrollDistance >= max) {
-      // Loop back to start
+    // Check if mobile view (viewport width < 640px)
+    const isMobile = window.innerWidth < 640;
+    const cardWidth = isMobile ? 280 : CARD_W; // Mobile card width is 280px
+    const gap = isMobile ? 16 : 32; // Smaller gap on mobile
+    const scrollDistance = cardWidth + gap;
+
+    const maxScrollLeft = el.scrollWidth - el.clientWidth;
+    const currentScroll = el.scrollLeft;
+
+    if (currentScroll + scrollDistance >= maxScrollLeft) {
+      // Reached the end, loop back to start
       el.scrollTo({ left: 0, behavior: "smooth" });
     } else {
-      el.scrollBy({ left: scrollDistance, behavior: "smooth" });
+      // Scroll to next card
+      el.scrollTo({
+        left: currentScroll + scrollDistance,
+        behavior: "smooth",
+      });
     }
   }, [CARD_W]);
 
   const scrollPrev = useCallback(() => {
     const el = sliderRef.current;
     if (!el) return;
-    const scrollDistance = CARD_W + 32;
 
-    if (el.scrollLeft <= 0) {
-      // Loop to end
-      el.scrollTo({ left: el.scrollWidth - el.clientWidth, behavior: "auto" });
+    // Check if mobile view (viewport width < 640px)
+    const isMobile = window.innerWidth < 640;
+    const cardWidth = isMobile ? 280 : CARD_W; // Mobile card width is 280px
+    const gap = isMobile ? 16 : 32; // Smaller gap on mobile
+    const scrollDistance = cardWidth + gap;
+
+    const currentScroll = el.scrollLeft;
+
+    if (currentScroll <= 0) {
+      // At the beginning, loop to end
+      const maxScrollLeft = el.scrollWidth - el.clientWidth;
+      el.scrollTo({ left: maxScrollLeft, behavior: "smooth" });
     } else {
-      el.scrollBy({ left: -scrollDistance, behavior: "smooth" });
+      // Scroll to previous card
+      el.scrollTo({
+        left: Math.max(0, currentScroll - scrollDistance),
+        behavior: "smooth",
+      });
     }
   }, [CARD_W]);
 
-  useEffect(() => {
-    if (!auto) return;
-    const id = setInterval(scrollNext, 4000);
-    return () => clearInterval(id);
-  }, [auto, scrollNext]);
+  // Cuisine carousel scroll functions
+  const scrollCuisineNext = useCallback(() => {
+    const el = cuisineSliderRef.current;
+    if (!el) return;
+
+    const scrollDistance = CUISINE_CARD_W + 32; // Card width + gap
+    const maxScrollLeft = el.scrollWidth - el.clientWidth;
+    const currentScroll = el.scrollLeft;
+
+    if (currentScroll + scrollDistance >= maxScrollLeft) {
+      // Reached the end, loop back to start
+      el.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      // Scroll to next card
+      el.scrollTo({
+        left: currentScroll + scrollDistance,
+        behavior: "smooth",
+      });
+    }
+  }, [CUISINE_CARD_W]);
+
+  const scrollCuisinePrev = useCallback(() => {
+    const el = cuisineSliderRef.current;
+    if (!el) return;
+
+    const scrollDistance = CUISINE_CARD_W + 32; // Card width + gap
+    const currentScroll = el.scrollLeft;
+
+    if (currentScroll <= 0) {
+      // At the beginning, loop to end
+      const maxScrollLeft = el.scrollWidth - el.clientWidth;
+      el.scrollTo({ left: maxScrollLeft, behavior: "smooth" });
+    } else {
+      // Scroll to previous card
+      el.scrollTo({
+        left: Math.max(0, currentScroll - scrollDistance),
+        behavior: "smooth",
+      });
+    }
+  }, [CUISINE_CARD_W]);
+
+  // Auto-scroll effect removed - manual navigation only
 
   // Define a style object for hiding the scrollbar reliably
   const scrollbarHideStyle = {
@@ -228,15 +309,16 @@ function IndexContent() {
 
   return (
     <div
-      className="min-h-screen bg-dark-bg text-light-white"
+      className="min-h-screen w-full bg-dark-bg text-light-white"
       style={{
-        background:
-          "radial-gradient(7.64% 111.53% at 0% 77.22%, #064194 0%, rgba(14, 26, 43, 0.00) 100%), radial-gradient(8.81% 67.5% at 96.67% 44.69%, #064194 0%, rgba(14, 26, 43, 0.00) 100%), radial-gradient(14.14% 32.54% at 1.11% -0.19%, #064194 0%, rgba(14, 26, 43, 0.00) 100%), radial-gradient(19.69% 150.83% at 101.94% 6.59%, #064194 0%, rgba(14, 26, 43, 0.00) 100%), radial-gradient(8.97% 68.75% at -3.75% 22.84%, #064194 0%, rgba(14, 26, 43, 0.00) 100%), #0E1A2B",
+        background: `radial-gradient(20.62% 53.89% at 100% 76.15%, #064194 20%, rgba(14, 26, 43, 0.00) 50%),
+            radial-gradient(49.93% 70.21% at 50% 0%, #064194 20%, rgba(14, 26, 43, 0.00) 50%),
+            linear-gradient(0deg, ${navyDark} 0%, ${navyDark} 100%)`,
       }}
     >
       {/* Hero Section */}
       <div
-        className="relative min-h-[600px] md:min-h-[775px] bg-cover bg-center"
+        className="relative min-h-[600px] md:min-h-[775px] bg-cover bg-center w-full"
         style={{
           backgroundImage:
             "linear-gradient(0deg, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.62) 100%), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=2000&q=80')",
@@ -245,25 +327,25 @@ function IndexContent() {
         <Header lang={lang} setLang={setLang} />
 
         {/* Hero Content */}
-        <div className="max-w-[1440px] mx-auto px-4 lg:px-14 flex flex-col items-center justify-center pt-16 md:pt-24 lg:pt-32 pb-10 md:pb-16 lg:pb-20">
-          <div className="text-center max-w-[514px] mb-8 lg:mb-10">
-            <h1 className="font-dm-sans text-4xl md:text-6xl font-light leading-[111%] tracking-tight text-white mb-4">
+        <div className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 lg:px-14 flex flex-col items-center justify-center pt-12 sm:pt-16 md:pt-24 lg:pt-32 pb-8 sm:pb-10 md:pb-16 lg:pb-20 w-full">
+          <div className="text-center max-w-[514px] mb-6 sm:mb-8 lg:mb-10">
+            <h1 className="font-dm-sans text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-[111%] tracking-tight text-white mb-3 sm:mb-4 px-2">
               Premium Venues Await Your Booking
             </h1>
-            <p className="text-white text-base font-medium max-w-[448px] mx-auto">
+            <p className="text-white text-sm sm:text-base font-medium max-w-[448px] mx-auto px-4">
               Discover and book the finest venues for your special occasions.
               Luxury dining experiences with instant confirmation.
             </p>
           </div>
 
-          {/* Booking Form - now responsive */}
-          <div className="w-full max-w-[664px] p-6 rounded-2xl border border-white/50 bg-gradient-to-b from-[rgba(58,113,190,0.7)] to-[rgba(28,28,28,0.7)] shadow-xl backdrop-blur-md">
+          {/* Booking Form - enhanced mobile responsiveness */}
+          <div className="w-full max-w-[664px] p-4 sm:p-6 rounded-2xl border border-white/50 bg-gradient-to-b from-[rgba(58,113,190,0.7)] to-[rgba(28,28,28,0.7)] shadow-xl backdrop-blur-md mx-4">
             <h3 className="text-white text-base font-medium mb-4">
               Book a Table
             </h3>
-            <div className="flex flex-wrap items-end gap-3 md:gap-4">
-              {/* Location Input (Takes ~50% width on mobile) */}
-              <div className="flex-1 min-w-[45%] md:min-w-[140px]">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-end gap-3 md:gap-4">
+              {/* Location Input */}
+              <div className="flex-1 w-full sm:min-w-[45%] md:min-w-[140px]">
                 <label className="text-white/50 text-xs mb-1 block">
                   Location
                 </label>
@@ -271,10 +353,10 @@ function IndexContent() {
                   <select
                     value={loc}
                     onChange={(e) => setLoc(e.target.value)}
-                    className="w-full text-align-left appearance-none bg-transparent  rounded-md px-3 py-2 pr-4"
+                    className="w-full text-align-left appearance-none bg-transparent border border-white/30 rounded-md px-3 py-2.5 pr-10 text-white"
                   >
                     {uniqueLocations.map((c) => (
-                      <option key={c} value={c} className="text-black">
+                      <option key={c} value={c} className="text-black bg-white">
                         {c}
                       </option>
                     ))}
@@ -283,44 +365,48 @@ function IndexContent() {
                 </div>
               </div>
 
-              {/* Date Input (Takes ~50% width on mobile) */}
-              <div className="flex-1 min-w-[45%] md:min-w-[140px]">
+              {/* Date Input */}
+              <div className="flex-1 w-full sm:min-w-[45%] md:min-w-[140px]">
                 <label className="text-white/50 text-xs mb-1 block">Date</label>
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-transparent border-white/40 rounded-md px-3 py-2"
+                  className="w-full bg-transparent border border-white/30 rounded-md px-3 py-2.5 text-white"
                   style={{ colorScheme: "dark" }}
                 />
               </div>
 
-              {/* Guests Input (Takes ~50% width on mobile) */}
-              <div className="flex-1 min-w-[30%] md:min-w-[120px]">
-                <label className=" text-white/50 text-xs mb-1 block">
+              {/* Guests Input */}
+              <div className="flex-1 w-full sm:min-w-[30%] md:min-w-[120px]">
+                <label className="text-white/50 text-xs mb-1 block">
                   Guests
                 </label>
                 <div className="relative">
                   <select
                     value={guests}
                     onChange={(e) => setGuests(parseInt(e.target.value))}
-                    className="w-full appearance-none bg-transparent text-white  rounded-md px-3 py-2 pr-8"
+                    className="w-full appearance-none bg-transparent border border-white/30 text-white rounded-md px-3 py-2.5 pr-10"
                   >
                     {Array.from({ length: 12 }).map((_, i) => (
-                      <option key={i + 1} value={i + 1} className="text-black">
+                      <option
+                        key={i + 1}
+                        value={i + 1}
+                        className="text-black bg-white"
+                      >
                         {String(i + 1).padStart(2, "0")}
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-white absolute right-20 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-white absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
 
-              {/* Search Button (Full width on mobile, auto width on desktop) */}
+              {/* Search Button */}
               <Link
                 onClick={onSearch}
                 href="/explore"
-                className={`w-full md:w-auto mt-4 md:mt-0 px-10 md:px-12 py-3.5 rounded-md text-white text-sm font-medium text-center`}
+                className={`w-full sm:w-auto mt-2 sm:mt-4 md:mt-0 px-8 sm:px-10 md:px-12 py-3.5 rounded-md text-white text-sm font-medium text-center transition-opacity hover:opacity-90`}
                 style={{ backgroundColor: golden }}
               >
                 Search
@@ -331,15 +417,15 @@ function IndexContent() {
       </div>
 
       {/* What's Your Best Dine Time */}
-      <section className="max-w-[1440px] mx-auto px-4 lg:px-14 py-8 lg:py-10">
-        <h2 className="text-2xl lg:text-[34px] font-normal mb-8 lg:mb-10">
+      <section className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 lg:px-14 py-6 sm:py-8 lg:py-10 w-full">
+        <h2 className="text-xl sm:text-2xl lg:text-[34px] font-normal mb-6 sm:mb-8 lg:mb-10 text-center sm:text-left">
           Whats Your Best Dine Time!
         </h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
           {timeCategories.map((category, index) => (
             <div
               key={index}
-              className={`relative h-[150px] sm:h-[203px] rounded-[18px] border ${
+              className={`relative h-[140px] sm:h-[160px] md:h-[180px] lg:h-[203px] rounded-[18px] border ${
                 index === 2 ? "border-2 border-white" : "border border-white"
               } overflow-hidden group cursor-pointer transition-transform hover:scale-105`}
               style={{
@@ -359,14 +445,14 @@ function IndexContent() {
       </section>
 
       {/* Restaurant Carousel Section */}
-      <section className="max-w-[1440px] mx-auto py-8 lg:py-10">
-        <div className="px-4 lg:px-16 flex justify-between items-end mb-6">
-          <h2 className="text-2xl lg:text-[34px] font-normal">
+      <section className="max-w-[1440px] mx-auto py-6 sm:py-8 lg:py-10 w-full">
+        <div className="px-3 sm:px-4 md:px-6 lg:px-16 flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 sm:mb-6 gap-2 sm:gap-0">
+          <h2 className="text-xl sm:text-2xl lg:text-[34px] font-normal">
             Book for dinner tonight in Adelaide
           </h2>
           <Link
             href="#"
-            className="text-white/75 text-base lg:text-xl font-medium"
+            className="text-white/75 text-sm sm:text-base lg:text-xl font-medium"
           >
             View all
           </Link>
@@ -376,14 +462,12 @@ function IndexContent() {
           <div
             ref={sliderRef}
             tabIndex={0}
-            onMouseEnter={() => setAuto(false)}
-            onMouseLeave={() => setAuto(true)}
-            // Handle keyboard navigation only for accessibility (not primary touch input)
+            // Handle keyboard navigation for accessibility
             onKeyDown={(e) => {
               if (e.key === "ArrowRight") scrollNext();
               if (e.key === "ArrowLeft") scrollPrev();
             }}
-            className="flex gap-8 px-4 lg:px-16 py-5 overflow-x-auto scrollbar-hide scroll-smooth"
+            className="flex gap-4 sm:gap-6 md:gap-8 px-3 sm:px-4 md:px-6 lg:px-16 py-5 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory"
             style={scrollbarHideStyle}
           >
             {restaurantImages.map((img, index) => (
@@ -407,40 +491,42 @@ function IndexContent() {
             ))}
           </div>
 
-          {/* Navigation Buttons */}
+          {/* Navigation Buttons - Fixed positioning */}
           <button
             aria-label="Previous"
             onClick={scrollPrev}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-[40px] h-[40px] rounded-full border border-white bg-gradient-to-b from-[rgba(0,0,0,0.57)] to-[rgba(33,60,98,0.57)] hidden md:flex items-center justify-center lg:left-7 lg:w-[50px] lg:h-[50px]"
+            className="absolute left-2 sm:left-4 lg:left-7 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
+            style={{ backgroundColor: "rgba(14, 26, 43, 0.95)" }}
           >
-            <ChevronLeft className="w-5 h-5 text-white" />
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </button>
           <button
             aria-label="Next"
             onClick={scrollNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-[40px] h-[40px] rounded-full border border-white bg-white/10 hidden md:flex items-center justify-center lg:right-7 lg:w-[50px] lg:h-[50px]"
+            className="absolute right-2 sm:right-4 lg:right-7 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
+            style={{ backgroundColor: "rgba(14, 26, 43, 0.95)" }}
           >
-            <ChevronRight className="w-5 h-5 text-white" />
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </button>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="max-w-[1440px] mx-auto px-4 lg:px-14 py-8 lg:py-10">
-        <div className="mb-8">
-          <h2 className="text-2xl lg:text-[34px] font-normal mb-2">
+      <section className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 lg:px-14 py-6 sm:py-8 lg:py-10 w-full">
+        <div className="mb-6 sm:mb-8 text-center sm:text-left">
+          <h2 className="text-xl sm:text-2xl lg:text-[34px] font-normal mb-2">
             How it works
           </h2>
-          <p className="text-white/80 text-base font-medium">
+          <p className="text-white/80 text-sm sm:text-base font-medium px-4 sm:px-0">
             Simple Secure and instant venue booking in just 4 steps
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
           {howItWorksSteps.map((step, index) => (
             <div
               key={index}
-              className="p-6 md:p-8 rounded-xl border-2 border-white flex flex-col gap-2"
+              className="p-4 sm:p-6 md:p-8 rounded-xl border-2 border-white flex flex-col gap-2 text-center sm:text-left"
             >
               <step.icon className={`w-7 h-7 mb-2`} style={{ color: golden }} />
               <h3 className="text-white text-xl font-medium">{step.title}</h3>
@@ -493,7 +579,22 @@ function IndexContent() {
                         </span>
                       </div>
                     </div>
-                    <Bookmark className="w-5 h-5 text-white" />
+                    <button
+                      onClick={(e) => toggleRestaurantSave(col, item, e)}
+                      className={`p-1 rounded-md border transition-all duration-300 ${
+                        savedRestaurants[`${col}-${item}`]
+                          ? "border-green-400 bg-green-500/20 hover:bg-green-500/30"
+                          : "border-white/20 bg-white/10 hover:bg-white/20"
+                      }`}
+                    >
+                      <Bookmark
+                        className={`w-5 h-5 transition-all duration-300 ${
+                          savedRestaurants[`${col}-${item}`]
+                            ? "text-green-400 fill-green-400"
+                            : "text-white fill-transparent"
+                        }`}
+                      />
+                    </button>
                   </div>
                   {item < 5 && <div className="h-px bg-[#7A7A7A] my-3"></div>}
                 </div>
@@ -596,7 +697,8 @@ function IndexContent() {
         <div className="relative">
           <div className="overflow-hidden">
             <div
-              className="flex gap-8 px-4 lg:px-16 py-5 overflow-x-auto scrollbar-hide"
+              ref={cuisineSliderRef}
+              className="flex gap-8 px-4 lg:px-16 py-5 overflow-x-auto scrollbar-hide scroll-smooth"
               style={scrollbarHideStyle}
             >
               {cuisineImages.map((cuisine, index) => (
@@ -618,12 +720,22 @@ function IndexContent() {
               ))}
             </div>
           </div>
-          {/* Navigation Arrows */}
-          <button className="absolute left-4 top-1/2 -translate-y-1/2 w-[40px] h-[40px] rounded-full border border-white bg-gradient-to-b from-[rgba(0,0,0,0.57)] to-[rgba(33,60,98,0.57)] backdrop-blur-[44px] hidden md:flex items-center justify-center lg:left-7 lg:w-[50px] lg:h-[50px]">
-            <ChevronLeft className="w-5 h-5 text-white" />
+          {/* Navigation Arrows - Now functional */}
+          <button
+            onClick={scrollCuisinePrev}
+            aria-label="Previous Cuisine"
+            className="absolute left-2 sm:left-4 lg:left-7 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
+            style={{ backgroundColor: "rgba(14, 26, 43, 0.95)" }}
+          >
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </button>
-          <button className="absolute right-4 top-1/2 -translate-y-1/2 w-[40px] h-[40px] rounded-full border border-white bg-white/10 backdrop-blur-[7.5px] hidden md:flex items-center justify-center lg:right-7 lg:w-[50px] lg:h-[50px]">
-            <ChevronRight className="w-5 h-5 text-white" />
+          <button
+            onClick={scrollCuisineNext}
+            aria-label="Next Cuisine"
+            className="absolute right-2 sm:right-4 lg:right-7 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
+            style={{ backgroundColor: "rgba(14, 26, 43, 0.95)" }}
+          >
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </button>
         </div>
       </section>

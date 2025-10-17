@@ -38,7 +38,7 @@ export default function RootLayout({
       >
         <LanguageProvider>
           <BookingProvider>
-            <div className="pb-20 lg:pb-0">{children}</div>
+            <div className="pb-20 xl:pb-0">{children}</div>
             <MobileNavBar />
           </BookingProvider>
         </LanguageProvider>

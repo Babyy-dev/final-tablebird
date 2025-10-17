@@ -29,7 +29,7 @@ export default function VenueDetailsPage() {
   const router = useRouter();
   const { setBookingData } = useBooking();
   const golden = "#eec212";
-  const deepBlue = "#0E1A2B";
+  const navyDark = "#0E1A2B";
   const [lang, setLang] = useState<"EN" | "BG">("EN");
 
   // --- LOCAL UI STATE ---
@@ -79,7 +79,14 @@ export default function VenueDetailsPage() {
 
   if (!venue) {
     return (
-      <div className="min-h-screen bg-[#0E1A2B] text-white flex items-center justify-center">
+      <div
+        className="min-h-screen text-white flex items-center justify-center"
+        style={{
+          background: `radial-gradient(20.62% 53.89% at 100% 76.15%, #064194 20%, rgba(14, 26, 43, 0.00) 50%),
+            radial-gradient(49.93% 70.21% at 50% 0%, #064194 20%, rgba(14, 26, 43, 0.00) 50%),
+            linear-gradient(0deg, ${navyDark} 0%, ${navyDark} 100%)`,
+        }}
+      >
         <div className="text-center">
           <p className="mb-4">Venue not found.</p>
           <Link href="/explore" className="underline" style={{ color: golden }}>
@@ -99,7 +106,7 @@ export default function VenueDetailsPage() {
   ).toFixed(0)}лв`;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: deepBlue }}>
+    <div className="min-h-screen" style={{ backgroundColor: navyDark }}>
       {/* 2. STICKY TRANSPARENT HEADER */}
       <header className="sticky top-0 z-50 bg-black/50 backdrop-blur-sm">
         <Header lang={lang} setLang={setLang} isTransparent={true} />
@@ -160,7 +167,7 @@ export default function VenueDetailsPage() {
 
                 <div
                   className="inline-flex px-3 py-1 rounded-md border border-white/50"
-                  style={{ backgroundColor: golden, color: deepBlue }}
+                  style={{ backgroundColor: golden, color: navyDark }}
                 >
                   <span className="text-sm text-white font-medium">
                     2 km away
@@ -173,10 +180,8 @@ export default function VenueDetailsPage() {
               </div>
             </div>
 
-            {/* Right: Booking Widget (Shrink to fit content) */}
-            <div className="w-full lg:w-fit sticky lg:top-[100px] max-w-sm mx-auto lg:mx-0 lg:max-w-none">
-              {/* <div className="relative z-10 flex flex-col gap-3 p-4 rounded-2xl border border-white/50 ring-1 ring-white/30 bg-gradient-to-b from-[#213C62]/60 to-black/60 backdrop-blur-lg shadow-2xl"> */}
-              {/* Booking Form Controls (Dropdowns for Time/Guests, Date Input) */}
+            {/* Right: Booking Widget (Sticky in original position) */}
+            <div className="w-full lg:w-fit lg:sticky lg:top-[100px] lg:self-start max-w-sm mx-auto lg:mx-0 lg:max-w-none z-40">
               <div className="flex flex-col gap-4 p-4 rounded-lg border border-white/50 bg-white/10 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                   <Calendar className="w-7 h-7 text-white flex-shrink-0" />
@@ -248,7 +253,7 @@ export default function VenueDetailsPage() {
                 <Button
                   onClick={handleBooking}
                   className="w-full py-3 rounded-lg border border-white bg-golden hover:bg-golden/90 text-white font-medium text-sm transition-colors"
-                  style={{ backgroundColor: golden, color: deepBlue }}
+                  style={{ backgroundColor: golden, color: navyDark }}
                 >
                   Book a Table
                 </Button>
@@ -292,7 +297,6 @@ export default function VenueDetailsPage() {
                     </div>
                   </div>
                 </div>
-                {/* </div> */}
               </div>
             </div>
           </div>

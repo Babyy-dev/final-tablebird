@@ -67,9 +67,8 @@ export function LocationSearchPopover({
           // Frosted Glass Look: semi-transparent black background + heavy blur + white border
           "bg-black/60 backdrop-blur-xl border-white/20 border p-0",
           // Position: top-[72px] clears the Header height.
-          // right-4 aligns it with mobile padding.
-          // lg:right-14 aligns it with the desktop padding (px-14 in Header).
-          "hidden sm:flex flex-col top-[72px] right-4 lg:right-14"
+          // Position directly below the location button
+          "hidden xl:flex flex-col top-[72px] right-16 xl:right-20"
         )}
       >
         <div className="flex flex-col">

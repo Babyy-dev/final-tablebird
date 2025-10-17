@@ -45,16 +45,16 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#0E1A2B] border-t border-gray-700">
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-16 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-16 py-8 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {/* Social and Brand Info */}
-          <div className="col-span-2 md:col-span-1 flex flex-col space-y-6">
+          <div className="col-span-1 sm:col-span-2 md:col-span-1 flex flex-col space-y-4 sm:space-y-6 text-center sm:text-left">
             <img
               src="/logo.png"
               alt="TableBird Logo"
-              className="h-10 w-auto object-contain "
+              className="h-8 sm:h-10 w-auto object-contain mx-auto sm:mx-0"
             />
-            <div className="space-y-4 mb-8">
+            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
               <div className="flex items-center gap-3 px-5 py-3 rounded-xl border border-white bg-white/10 backdrop-blur-sm w-fit">
                 <span className="text-white/95 text-xs">Powered by</span>
                 <img src="/stripe.png" alt="Stripe" className="h-5" />
@@ -80,16 +80,16 @@ export default function Footer() {
 
           {/* Navigation Columns */}
           {navGroups.map((group) => (
-            <div key={group.title}>
-              <h3 className="text-base font-bold text-white mb-4">
+            <div key={group.title} className="text-center sm:text-left">
+              <h3 className="text-sm sm:text-base font-bold text-white mb-3 sm:mb-4">
                 {group.title}
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2 sm:space-y-3">
                 {group.links.map((link, index) => (
                   <li key={index}>
                     <Link
                       href={link.href}
-                      className="text-gray-400 text-sm hover:text-[#D4A853] transition"
+                      className="text-gray-400 text-xs sm:text-sm hover:text-[#D4A853] transition"
                     >
                       {link.label}
                     </Link>
@@ -100,11 +100,11 @@ export default function Footer() {
           ))}
 
           {/* Contact Info */}
-          <div>
-            <h3 className="text-base font-bold text-white mb-4">
+          <div className="text-center sm:text-left">
+            <h3 className="text-sm sm:text-base font-bold text-white mb-3 sm:mb-4">
               {t("Contact info")}
             </h3>
-            <div className="space-y-3 text-gray-400 text-sm">
+            <div className="space-y-2 sm:space-y-3 text-gray-400 text-xs sm:text-sm">
               <p>
                 Sofia, Bulgaria
                 <br />
@@ -117,26 +117,26 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
-          <p className="text-gray-400 mb-4 md:mb-0">
+        <div className="border-t border-gray-700 pt-6 sm:pt-8 flex flex-col md:flex-row justify-between items-center text-xs sm:text-sm gap-4 md:gap-0">
+          <p className="text-gray-400 text-center md:text-left">
             © {new Date().getFullYear()} TableBird. All rights reserved.
           </p>
-          <div className="flex gap-4 md:gap-8">
+          <div className="flex flex-wrap justify-center md:justify-end gap-3 sm:gap-4 md:gap-8">
             <Link
               href="#"
-              className="text-gray-400 hover:text-[#D4A853] transition"
+              className="text-gray-400 hover:text-[#D4A853] transition whitespace-nowrap"
             >
               {t("Privacy Policy")}
             </Link>
             <Link
               href="#"
-              className="text-gray-400 hover:text-[#D4A853] transition"
+              className="text-gray-400 hover:text-[#D4A853] transition whitespace-nowrap"
             >
               {t("Terms of Service")}
             </Link>
             <Link
               href="#"
-              className="text-gray-400 hover:text-[#D4A853] transition"
+              className="text-gray-400 hover:text-[#D4A853] transition whitespace-nowrap"
             >
               {t("Cookie Policy")}
             </Link>

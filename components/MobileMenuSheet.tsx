@@ -19,6 +19,7 @@ import {
   Star,
   Heart,
   GlassWater,
+  Search,
 } from "lucide-react";
 
 interface MobileMenuSheetProps {
@@ -83,6 +84,17 @@ export function MobileMenuSheet({
               </Button>
             </Link>
           </div>
+
+          {/* Search Button */}
+          <Link href="/explore" onClick={onClose}>
+            <Button
+              className="w-full justify-start gap-2 bg-[#1A2E4C] hover:bg-[#2A3E5C] text-white border border-gray-700"
+              variant="outline"
+            >
+              <Search className="w-5 h-5" />
+              Search
+            </Button>
+          </Link>
 
           {/* New Navigation Links Section for the added tabs */}
           <div className="pt-4 space-y-1 border-t border-gray-700">

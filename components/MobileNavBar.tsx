@@ -31,7 +31,7 @@ const MobileNavBar = () => {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-40 lg:hidden"
+      className="fixed bottom-0 left-0 right-0 z-40 xl:hidden"
       style={{
         backgroundColor: deepBlue,
         borderTop: "1px solid #1A2E4C",

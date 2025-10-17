@@ -35,6 +35,7 @@ function ExplorePageContent() {
   const router = useRouter();
   // const golden = "#D4A853";
   // const deepBlue = "#0E1A2B";
+  const navyDark = "#0E1A2B";
 
   // State initialization
   const [time, setTime] = useState(searchParams.get("time") || "19:00");
@@ -128,7 +129,14 @@ function ExplorePageContent() {
   const countdown = "19:59:43";
 
   return (
-    <div className="min-h-screen bg-[#0E1A2B] flex flex-col">
+    <div
+      className="min-h-screen flex flex-col w-full"
+      style={{
+        background: `radial-gradient(20.62% 53.89% at 100% 76.15%, #064194 20%, rgba(14, 26, 43, 0.00) 50%),
+            radial-gradient(49.93% 70.21% at 50% 0%, #064194 20%, rgba(14, 26, 43, 0.00) 50%),
+            linear-gradient(0deg, ${navyDark} 0%, ${navyDark} 100%)`,
+      }}
+    >
       <Header lang={lang} setLang={setLang} isTransparent={false} />
 
       {/* Hero / Filter Section */}
@@ -300,48 +308,54 @@ function ExplorePageContent() {
       </div>
       {/* End Hero / Filter Section */}
 
-      {/* Main Content: List and Map */}
+      {/* Main Content: List and Map - Mobile/Tablet optimized */}
       <div className="flex-1">
         <div className="max-w-[1400px] mx-auto px-4 md:px-[42px] py-8">
           <div className="flex flex-col lg:flex-row gap-6">
-            {/* Left Column: Restaurant List */}
-            <div className="flex-1 flex flex-wrap justify-center lg:grid lg:grid-cols-2 xl:grid-cols-2 gap-6">
-              {restaurants.map((restaurant) => (
-                <div
-                  key={restaurant.id}
-                  className="w-full max-w-[340px] md:max-w-none cursor-pointer" // Added cursor-pointer
-                  onClick={() => handleCardClick(restaurant.id)} // FIX: Added click handler for navigation
-                >
-                  <RestaurantCard
-                    id={restaurant.id}
-                    name={restaurant.name}
-                    rating="4.2"
-                    price={restaurant.price}
-                    priceAlt="78.23лв"
-                    distance="1 km"
-                    cuisine={restaurant.cuisine}
-                    address="Street Name"
-                    bookedTimes={restaurant.id}
-                    reviews="2.5k"
-                    image={restaurant.image}
-                    location={restaurant.location}
-                    tags={restaurant.tags}
-                    countdown={countdown}
-                    onSelect={handleSelect}
-                    className="[>div:nth-child(4)]:!left-auto [>div:nth-child(4)]:right-4"
-                  />
-                </div>
-              ))}
+            {/* Left Column: Restaurant List - Single column mobile/tablet, two columns desktop */}
+            <div className="flex-1 overflow-y-auto lg:max-h-none">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 justify-items-center">
+                {restaurants.map((restaurant) => (
+                  <div
+                    key={restaurant.id}
+                    className="w-full max-w-[400px] xl:max-w-[340px] cursor-pointer"
+                    onClick={() => handleCardClick(restaurant.id)}
+                    onMouseEnter={() => handleSelect(restaurant.id)}
+                    onMouseLeave={() => handleSelect(null)}
+                  >
+                    <RestaurantCard
+                      id={restaurant.id}
+                      name={restaurant.name}
+                      rating="4.2"
+                      price={restaurant.price}
+                      priceAlt="78.23лв"
+                      distance="1 km"
+                      cuisine={restaurant.cuisine}
+                      address="Street Name"
+                      bookedTimes={restaurant.id}
+                      reviews="2.5k"
+                      image={restaurant.image}
+                      location={restaurant.location}
+                      tags={restaurant.tags}
+                      countdown={countdown}
+                      onSelect={handleSelect}
+                      isExplorePage={true}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Right Column: Map View */}
-            <div className="hidden lg:block lg:w-[500px] lg:shrink-0">
-              <MapView
-                markers={markers}
-                selectedId={selectedId}
-                center={mapCenter}
-                onSelect={handleSelect}
-              />
+            {/* Right Column: Sticky Map View */}
+            <div className="w-full lg:w-[500px] lg:shrink-0">
+              <div className="sticky top-24 h-[400px] sm:h-[500px] lg:h-[600px] z-10">
+                <MapView
+                  markers={markers}
+                  selectedId={selectedId}
+                  center={mapCenter}
+                  onSelect={handleSelect}
+                />
+              </div>
             </div>
           </div>
         </div>
