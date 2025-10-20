@@ -76,10 +76,10 @@ export function RestaurantCard({
       {/* Soft Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-[#213C62]/70 to-transparent" />
 
-      {/* Glass Info Panel - Centered and touching bottom */}
+      {/* Glass Info Panel - For explore page: touching right side with left curve, for home: centered bottom */}
       <div className={`absolute border border-white/10 bg-[rgba(6,6,6,0.6)] backdrop-blur-md p-3 sm:p-4 z-10 ${
         isExplorePage 
-          ? "left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-[280px] sm:w-[300px] rounded-lg" 
+          ? "right-0 top-1/2 -translate-y-1/2 w-[280px] sm:w-[300px] rounded-l-2xl" 
           : "left-1/2 -translate-x-1/2 bottom-0 w-[calc(100%-2rem)] rounded-t-lg"
       }`}>
         {/* Top Section */}
