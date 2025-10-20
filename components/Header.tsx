@@ -4,8 +4,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Search, MapPin, ChevronDown, Menu } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { LocationSearchPopover } from "@/components/LocationSearchPopover";
 import { Button } from "@/components/ui/button";
 import { MobileMenuSheet } from "./MobileMenuSheet"; // Import the new Sheet component
@@ -25,16 +26,54 @@ export default function Header({
 }: HeaderProps) {
   const golden = "#D4A853";
   const router = useRouter();
+  const pathname = usePathname();
+  const t = useTranslations('header');
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [currentLocation, setCurrentLocation] = useState("Sofia");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Sync language state with current pathname - ensure English is default
+  useEffect(() => {
+    const currentLang = pathname.startsWith('/bg') ? 'BG' : 'EN';
+    setLang(currentLang);
+  }, [pathname, setLang]);
+
   const handleSearchClick = () => {
-    router.push("/explore");
+    const currentLocale = pathname.startsWith('/bg') ? 'bg' : 'en';
+    const explorePath = currentLocale === 'en' ? '/explore' : '/bg/explore';
+    router.push(explorePath);
   };
 
   const handleLocationClick = () => {
     setIsLocationOpen(true);
+  };
+
+  const handleLanguageSwitch = () => {
+    // Determine current and target language
+    const isCurrentlyBulgarian = pathname.startsWith('/bg');
+    const targetLanguage = isCurrentlyBulgarian ? 'EN' : 'BG';
+    
+    // Create new path
+    let newPath;
+    if (isCurrentlyBulgarian) {
+      // Switch from Bulgarian to English (remove /bg prefix)
+      if (pathname === '/bg') {
+        newPath = '/';
+      } else {
+        newPath = pathname.substring(3); // Remove '/bg'
+      }
+    } else {
+      // Switch from English to Bulgarian (add /bg prefix)
+      if (pathname === '/') {
+        newPath = '/bg';
+      } else {
+        newPath = `/bg${pathname}`;
+      }
+    }
+    
+    // Update state and navigate
+    setLang(targetLanguage);
+    router.push(newPath);
   };
 
   const bgColor = isTransparent
@@ -45,7 +84,7 @@ export default function Header({
     <header className={`sticky top-0 z-50 ${bgColor}`}>
       {/* Enhanced mobile responsive header */}
       <div className="max-w-[1440px] mx-auto px-3 sm:px-4 lg:px-14 py-3 sm:py-4 md:py-6 flex justify-between items-center h-[60px] sm:h-[68px] md:h-[72px]">
-        <Link href="/" className="flex-shrink-0">
+        <Link href={pathname.startsWith('/bg') ? '/bg' : '/'} className="flex-shrink-0">
           <Image
             src={LOGO_PATH}
             alt="TableBird Logo"
@@ -64,7 +103,7 @@ export default function Header({
           >
             <MapPin className="w-5 h-5 text-white" />
             <div>
-              <p className="text-xs text-white/70 leading-none">Location</p>
+              <p className="text-xs text-white/70 leading-none">{t('location')}</p>
               <p className="text-sm font-medium text-white leading-none">
                 {currentLocation}
               </p>
@@ -77,13 +116,13 @@ export default function Header({
             className="hidden xl:flex items-center gap-2 border border-white/50 rounded-md px-4 py-2.5 bg-black/20 backdrop-blur-sm w-72 cursor-pointer hover:border-[#D4A853] transition"
           >
             <span className="text-white placeholder-white/80 w-full text-sm">
-              Search
+              {t('search')}
             </span>
             <Search className="w-5 h-5 text-white" />
           </div>
 
           <button
-            onClick={() => setLang(lang === "EN" ? "BG" : "EN")}
+            onClick={handleLanguageSwitch}
             // role="switch"
             className="hidden xl:inline-flex relative w-[86px] h-[45px] rounded-[50px] border border-white bg-black/20 shadow-md cursor-pointer transition-colors"
             style={{ backgroundColor: "rgba(14, 26, 43, 0.4)" }}
@@ -111,31 +150,31 @@ export default function Header({
           </button>
 
           <Link
-            href="/Restaurants"
+            href={pathname.startsWith('/bg') ? '/bg/Restaurants' : '/Restaurants'}
             className="hidden xl:inline-block text-white text-sm font-medium transition-colors ml-2 lg:ml-4"
           >
-            Restaurants
+            {t('restaurants')}
           </Link>
 
           <Link
-            href="/Bars"
+            href={pathname.startsWith('/bg') ? '/bg/Bars' : '/Bars'}
             className="hidden xl:inline-block text-white text-sm font-medium transition-colors ml-2 lg:ml-4"
           >
-            Bars
+            {t('bars')}
           </Link>
 
           <Link
-            href="/Clubs"
+            href={pathname.startsWith('/bg') ? '/bg/Clubs' : '/Clubs'}
             className="hidden xl:inline-block text-white text-sm font-medium transition-colors ml-2 lg:ml-4"
           >
-            Clubs
+            {t('clubs')}
           </Link>
 
           <Link
-            href="/Favourites"
+            href={pathname.startsWith('/bg') ? '/bg/Favourites' : '/Favourites'}
             className="hidden xl:inline-block text-white text-sm font-medium transition-colors ml-2 lg:ml-4"
           >
-            Favourites
+            {t('favourites')}
           </Link>
 
           {/* <Link
@@ -145,12 +184,12 @@ export default function Header({
             Login
           </Link> */}
 
-          <Link href="/Register" className="hidden xl:inline-block">
+          <Link href={pathname.startsWith('/bg') ? '/bg/Register' : '/Register'} className="hidden xl:inline-block">
             <Button
               className="ml-2 px-6 py-2.5 lg:px-8 lg:py-3 rounded-md shadow-lg hover:bg-opacity-90 transition-colors h-9 lg:h-10 text-xs lg:text-sm"
               style={{ backgroundColor: golden }}
             >
-              Register
+              {t('register')}
             </Button>
           </Link>
 
@@ -171,7 +210,9 @@ export default function Header({
         onSelectLocation={(loc) => {
           setCurrentLocation(loc);
           setIsLocationOpen(false);
-          router.push(`/explore?loc=${loc}`);
+          const currentLocale = pathname.startsWith('/bg') ? 'bg' : 'en';
+          const explorePath = currentLocale === 'en' ? '/explore' : '/bg/explore';
+          router.push(`${explorePath}?loc=${loc}`);
         }}
       />
 

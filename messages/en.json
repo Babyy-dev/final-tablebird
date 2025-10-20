@@ -1,0 +1,247 @@
+{
+  "header": {
+    "location": "Location",
+    "search": "Search",
+    "restaurants": "Restaurants",
+    "bars": "Bars",
+    "clubs": "Clubs",
+    "favourites": "Favourites",
+    "register": "Register",
+    "login": "Login"
+  },
+  "mobile_menu": {
+    "title": "Account & Navigation",
+    "explore": "Explore",
+    "language": "Language",
+    "admin_dashboard": "Admin/Manager Dashboard",
+    "notify_me": "Notify me"
+  },
+  "home": {
+    "hero": {
+      "title": "Premium Venues Await Your Booking",
+      "subtitle": "Discover and book the finest venues for your special occasions. Luxury dining experiences with instant confirmation.",
+      "book_table": "Book a Table",
+      "location": "Location",
+      "date": "Date",
+      "guests": "Guests",
+      "search": "Search"
+    },
+    "dine_time": {
+      "title": "What's Your Best Dine Time!",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "eve_tea": "Eve Tea",
+      "dinner": "Dinner"
+    },
+    "dinner_section": {
+      "title": "Book for dinner tonight in Adelaide",
+      "view_all": "View all"
+    },
+    "how_it_works": {
+      "title": "How it works",
+      "subtitle": "Simple Secure and instant venue booking in just 4 steps",
+      "discover": {
+        "title": "Discover Venues",
+        "desc": "Browse our curated selection of premium venues in your city"
+      },
+      "book": {
+        "title": "Book Your Slot",
+        "desc": "Choose your preferred date and time slot with instant availability"
+      },
+      "confirmation": {
+        "title": "Confirmation",
+        "desc": "Choose your preferred date and time slot with instant availability"
+      },
+      "payment": {
+        "title": "Secure Payment",
+        "desc": "Pay securely with Stripe, Apple Pay, or Google Pay"
+      }
+    },
+    "top_restaurants": {
+      "title": "Top Restaurant This Week",
+      "subtitle": "Explore what's popular with other diners with these lists, updated weekly.",
+      "top_booked": "Top Booked",
+      "view_all": "View all"
+    },
+    "reviews": {
+      "title": "Latest reviews",
+      "review_title": "Review title",
+      "review_body": "Review body",
+      "reviewer_name": "Reviewer name",
+      "date": "Date",
+      "restaurant_name": "Restaurant Name",
+      "street_name": "Street Name"
+    },
+    "suggestion": {
+      "title": "Ask for Suggestion",
+      "subtitle": "Can't decide where to go? Let us help you!",
+      "placeholder": "Enter your preferences (e.g., 'romantic Italian with a view')",
+      "get_suggestion": "Get Suggestion"
+    },
+    "cuisines": {
+      "title": "Discover Cuisines",
+      "view_all": "View all",
+      "italian": "Italian",
+      "mexican": "Mexican",
+      "japanese": "Japanese",
+      "indian": "Indian"
+    },
+    "faq": {
+      "title": "FAQ",
+      "subtitle": "You Got Questions, We Got Answers",
+      "questions": [
+        {
+          "q": "Frequently Asked Question here, Question 1",
+          "a": "This is the corresponding answer for Question 1. You can find detailed information about our services, pricing, and booking policies here."
+        },
+        {
+          "q": "Frequently Asked Question here, Question 2", 
+          "a": "This is the corresponding answer for Question 2. Our platform offers instant confirmation for most venue bookings, subject to real-time availability checks with the restaurant's system."
+        },
+        {
+          "q": "Frequently Asked Question here, Question 3",
+          "a": "This is the corresponding answer for Question 3. We support various payment methods, including Stripe, Apple Pay, and Google Pay, ensuring a secure and seamless transaction process."
+        },
+        {
+          "q": "Frequently Asked Question here, Question 4",
+          "a": "This is the corresponding answer for Question 4. You can modify or cancel your booking through your user dashboard, provided it meets the venue's cancellation policy cutoff time."
+        },
+        {
+          "q": "Frequently Asked Question here, Question 5",
+          "a": "This is the corresponding answer for Question 5. Our recommendation engine uses your location, past preferences, and popularity data to suggest the best dining options for you right now."
+        },
+        {
+          "q": "Frequently Asked Question here, Question 6",
+          "a": "This is the corresponding answer for Question 6. We partner only with premium venues that meet our strict quality and service standards, ensuring a luxurious experience every time."
+        },
+        {
+          "q": "Frequently Asked Question here, Question 7",
+          "a": "This is the corresponding answer for Question 7. Yes, our platform is fully optimized for mobile browsing, allowing you to discover and book venues effortlessly on any device."
+        }
+      ]
+    },
+    "newsletter": {
+      "title": "Join Our Table",
+      "subtitle": "Subscribe to our newsletter for the latest updates and exclusive offers.",
+      "placeholder": "Enter your email",
+      "subscribe": "Subscribe"
+    }
+  },
+  "restaurant_card": {
+    "booked_times": "booked",
+    "reviews": "reviews",
+    "away": "away",
+    "you_are_in_luck": "You're in Luck! we still have {count} time slots"
+  },
+  "venue": {
+    "back_to_search": "Back to Search Results",
+    "book_table": "Book a Table",
+    "select_time": "Select a Time",
+    "time": "Time",
+    "date": "Date",
+    "guests": "Guests",
+    "notify_me": "Notify me",
+    "you_are_in_luck": "You're in Luck! we still have 4 time slots",
+    "km_away": "2 km away",
+    "currently_watching": "Person Currently Watching",
+    "overview": "Overview",
+    "experiences": "Experiences",
+    "private_dining": "Private Dinning",
+    "offers": "Offers",
+    "ask_concierge": "Ask Concierge",
+    "photos": "Photos",
+    "menu": "Menu",
+    "reviews": "Reviews",
+    "details": "Details",
+    "good_for_group": "Good for Group",
+    "neighborhood_gem": "Neighborhood gem",
+    "location": "Location",
+    "hours_operation": "Hours of Operation",
+    "daily_hours": "Daily 5:00 pm–2:00 am",
+    "cuisine": "Cusine",
+    "phone": "Phone no.",
+    "phone_number": "+140 345 678",
+    "latest_reviews": "Latest reviews",
+    "review_title": "Review title",
+    "more_images": "10 + More Images"
+  },
+  "location_popover": {
+    "select_location": "Select Location",
+    "metro": "Metro",
+    "region": "Region",
+    "full_list": "Full list of Metros"
+  },
+  "footer": {
+    "TableBird": "TableBird",
+    "About Us": "About Us",
+    "Blogs": "Blogs",
+    "Careers": "Careers",
+    "Press": "Press",
+    "Contact Us": "Contact Us",
+    "Explore": "Explore",
+    "Restaurants": "Restaurants",
+    "Reviews": "Reviews",
+    "Near Me": "Near Me",
+    "Profile": "Profile",
+    "Login": "Login",
+    "Register": "Register",
+    "Saves": "Saves",
+    "Bookings": "Bookings",
+    "Contact info": "Contact info",
+    "Privacy Policy": "Privacy Policy",
+    "Terms of Service": "Terms of Service",
+    "Cookie Policy": "Cookie Policy"
+  },
+  "explore": {
+    "available_now_in": "Available now in",
+    "time": "Time",
+    "date": "Date",
+    "guests": "Guests",
+    "restaurant": "Restaurant",
+    "bars": "Bars",
+    "clubs": "Clubs",
+    "tops": "Tops",
+    "populars": "Populars",
+    "loading_map": "Loading Map and Filters..."
+  },
+  "booking": {
+    "today": "Today",
+    "people": "people",
+    "holding_table": "We are holding this table for you for",
+    "available_seating": "Available seating options",
+    "standard": "Standard",
+    "outdoor": "Outdoor",
+    "rooftop": "Rooftop",
+    "bar_lounge": "Bar lounge",
+    "contact_details": "Contact Details",
+    "phone_number": "Phone number",
+    "occasion": "Occasion (optional)",
+    "special_request": "Special request (optional)",
+    "communication_preferences": "Communication preferences",
+    "email_offers": "Email me TableBird offers and event suggestions",
+    "text_updates": "Text me updates about my reservation (we won't spam)",
+    "complete_booking": "Complete booking"
+  },
+  "confirmation": {
+    "booking_confirmed": "Booking Confirmed",
+    "confirmation_code": "Confirmation Booking code",
+    "people": "people",
+    "cancel": "Cancel",
+    "modify": "Modify",
+    "add_to_calendar": "Add to Calendar",
+    "quick_action": "Quick action",
+    "directions": "Directions",
+    "call_restaurant": "Call restaurant",
+    "add_your_review": "Add your review",
+    "order_again": "Order again",
+    "co_diner": "Co-diner",
+    "phone": "Phone",
+    "email": "Email",
+    "occasion": "Occasion",
+    "seating": "Seating",
+    "special_request": "Special request"
+  },
+  "common": {
+    "loading": "Loading..."
+  }
+}

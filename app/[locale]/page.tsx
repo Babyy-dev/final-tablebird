@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import {
   Search,
   ChevronLeft,
@@ -40,9 +41,28 @@ function IndexContent() {
   const router = useRouter();
   const golden = "#D4A853";
   const navyDark = "#0E1A2B";
+  
+  // Translation hooks
+  const t = useTranslations('home');
+  const tHero = useTranslations('home.hero');
+  const tDineTime = useTranslations('home.dine_time');
+  const tDinner = useTranslations('home.dinner_section');
+  const tHowItWorks = useTranslations('home.how_it_works');
+  const tTopRestaurants = useTranslations('home.top_restaurants');
+  const tReviews = useTranslations('home.reviews');
+  const tSuggestion = useTranslations('home.suggestion');
+  const tCuisines = useTranslations('home.cuisines');
+  const tFAQ = useTranslations('home.faq');
+  const tNewsletter = useTranslations('home.newsletter');
 
-  // Header state
+  // Header state - sync with current locale
   const [lang, setLang] = useState<"EN" | "BG">("EN");
+  
+  // Initialize language state based on pathname - default to English
+  useEffect(() => {
+    const currentLang = typeof window !== 'undefined' && window.location.pathname.startsWith('/bg') ? 'BG' : 'EN';
+    setLang(currentLang);
+  }, []);
 
   // Booking box state initialization
   const uniqueLocations = useMemo(
@@ -70,6 +90,7 @@ function IndexContent() {
     "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80",
     "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=80",
     "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80",
+    "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=400&q=80",
   ];
 
   // --- NEW FAQ STATE ---
@@ -105,8 +126,8 @@ function IndexContent() {
     const el = sliderRef.current;
     if (!el) return;
 
-    // Check if mobile view (viewport width < 640px)
-    const isMobile = window.innerWidth < 640;
+    // Check if mobile view (viewport width < 640px) - only in browser
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
     const cardWidth = isMobile ? 280 : CARD_W; // Mobile card width is 280px
     const gap = isMobile ? 16 : 32; // Smaller gap on mobile
     const scrollDistance = cardWidth + gap;
@@ -130,8 +151,8 @@ function IndexContent() {
     const el = sliderRef.current;
     if (!el) return;
 
-    // Check if mobile view (viewport width < 640px)
-    const isMobile = window.innerWidth < 640;
+    // Check if mobile view (viewport width < 640px) - only in browser
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
     const cardWidth = isMobile ? 280 : CARD_W; // Mobile card width is 280px
     const gap = isMobile ? 16 : 32; // Smaller gap on mobile
     const scrollDistance = cardWidth + gap;
@@ -200,108 +221,92 @@ function IndexContent() {
     scrollbarWidth: "none" /* Firefox */,
   } as React.CSSProperties;
 
-  // Data Definitions
+  // Data Definitions with translations
   const timeCategories = [
     {
-      name: "Breakfast",
+      name: tDineTime('breakfast'),
       image:
         "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=400&q=80",
     },
     {
-      name: "Lunch",
+      name: tDineTime('lunch'),
       image:
         "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80",
     },
     {
-      name: "Eve Tea",
+      name: tDineTime('eve_tea'),
       image:
         "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&q=80",
     },
     {
-      name: "Dinner",
+      name: tDineTime('dinner'),
       image:
         "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80",
     },
   ];
   const cuisineImages = [
     {
-      name: "Italian",
+      name: tCuisines('italian'),
       image:
         "https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?w=400&q=80",
     },
     {
-      name: "Mexican",
+      name: tCuisines('mexican'),
       image:
         "https://images.unsplash.com/photo-1565299624946-b28f0a0ae38?w=400&q=80",
     },
     {
-      name: "Japanese",
+      name: tCuisines('japanese'),
       image:
         "https://images.unsplash.com/photo-1569718212165-fb6926501d24?w=400&q=80",
     },
     {
-      name: "Indian",
+      name: tCuisines('indian'),
       image:
         "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=400&q=80",
     },
   ];
-  const faqItems = [
-    {
-      q: "Frequently Asked Question here, Question 1",
-      a: "This is the corresponding answer for Question 1. You can find detailed information about our services, pricing, and booking policies here.",
-    },
-    {
-      q: "Frequently Asked Question here, Question 2",
-      a: "This is the corresponding answer for Question 2. Our platform offers instant confirmation for most venue bookings, subject to real-time availability checks with the restaurant's system.",
-    },
-    {
-      q: "Frequently Asked Question here, Question 3",
-      a: "This is the corresponding answer for Question 3. We support various payment methods, including Stripe, Apple Pay, and Google Pay, ensuring a secure and seamless transaction process.",
-    },
-    {
-      q: "Frequently Asked Question here, Question 4",
-      a: "This is the corresponding answer for Question 4. You can modify or cancel your booking through your user dashboard, provided it meets the venue's cancellation policy cutoff time.",
-    },
-    {
-      q: "Frequently Asked Question here, Question 5",
-      a: "This is the corresponding answer for Question 5. Our recommendation engine uses your location, past preferences, and popularity data to suggest the best dining options for you right now.",
-    },
-    {
-      q: "Frequently Asked Question here, Question 6",
-      a: "This is the corresponding answer for Question 6. We partner only with premium venues that meet our strict quality and service standards, ensuring a luxurious experience every time.",
-    },
-    {
-      q: "Frequently Asked Question here, Question 7",
-      a: "This is the corresponding answer for Question 7. Yes, our platform is fully optimized for mobile browsing, allowing you to discover and book venues effortlessly on any device.",
-    },
-  ];
+  
+  // Define FAQ item type
+  type FAQItem = {
+    q: string;
+    a: string;
+  };
+
+  // Use FAQ questions from translations
+  const faqItems = tFAQ.raw('questions') as FAQItem[];
 
   const howItWorksSteps = [
     {
       icon: Search,
-      title: "Discover Venues",
-      desc: "Browse our curated selection of premium venues in your city",
+      title: tHowItWorks('discover.title'),
+      desc: tHowItWorks('discover.desc'),
     },
     {
       icon: CalendarDays,
-      title: "Book Your Slot",
-      desc: "Choose your preferred date and time slot with instant availability",
+      title: tHowItWorks('book.title'),
+      desc: tHowItWorks('book.desc'),
     },
     {
       icon: CheckCircle,
-      title: "Confirmation",
-      desc: "Choose your preferred date and time slot with instant availability",
+      title: tHowItWorks('confirmation.title'),
+      desc: tHowItWorks('confirmation.desc'),
     },
     {
       icon: CreditCard,
-      title: "Secure Payment",
-      desc: "Pay securely with Stripe, Apple Pay, or Google Pay",
+      title: tHowItWorks('payment.title'),
+      desc: tHowItWorks('payment.desc'),
     },
   ];
 
   function onSearch() {
+    // Get current locale from window path since usePathname hook is not available here
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    const isEnglish = !currentPath.startsWith('/bg');
+    const searchPath = isEnglish ? '/search' : '/bg/search';
+    
     router.push(
-      `/search?loc=${encodeURIComponent(loc)}&date=${encodeURIComponent(
+      `${searchPath}?loc=${encodeURIComponent(loc)}&date=${encodeURIComponent(
         date
       )}&guests=${guests}`
     );
@@ -330,24 +335,23 @@ function IndexContent() {
         <div className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 lg:px-14 flex flex-col items-center justify-center pt-12 sm:pt-16 md:pt-24 lg:pt-32 pb-8 sm:pb-10 md:pb-16 lg:pb-20 w-full">
           <div className="text-center max-w-[514px] mb-6 sm:mb-8 lg:mb-10">
             <h1 className="font-dm-sans text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-[111%] tracking-tight text-white mb-3 sm:mb-4 px-2">
-              Premium Venues Await Your Booking
+              {tHero('title')}
             </h1>
             <p className="text-white text-sm sm:text-base font-medium max-w-[448px] mx-auto px-4">
-              Discover and book the finest venues for your special occasions.
-              Luxury dining experiences with instant confirmation.
+              {tHero('subtitle')}
             </p>
           </div>
 
           {/* Booking Form - enhanced mobile responsiveness */}
           <div className="w-full max-w-[664px] p-4 sm:p-6 rounded-2xl border border-white/50 bg-gradient-to-b from-[rgba(58,113,190,0.7)] to-[rgba(28,28,28,0.7)] shadow-xl backdrop-blur-md mx-4">
             <h3 className="text-white text-base font-medium mb-4">
-              Book a Table
+              {tHero('book_table')}
             </h3>
             <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-end gap-3 md:gap-4">
               {/* Location Input */}
               <div className="flex-1 w-full sm:min-w-[45%] md:min-w-[140px]">
                 <label className="text-white/50 text-xs mb-1 block">
-                  Location
+                  {tHero('location')}
                 </label>
                 <div className="relative">
                   <select
@@ -367,7 +371,7 @@ function IndexContent() {
 
               {/* Date Input */}
               <div className="flex-1 w-full sm:min-w-[45%] md:min-w-[140px]">
-                <label className="text-white/50 text-xs mb-1 block">Date</label>
+                <label className="text-white/50 text-xs mb-1 block">{tHero('date')}</label>
                 <input
                   type="date"
                   value={date}
@@ -380,7 +384,7 @@ function IndexContent() {
               {/* Guests Input */}
               <div className="flex-1 w-full sm:min-w-[30%] md:min-w-[120px]">
                 <label className="text-white/50 text-xs mb-1 block">
-                  Guests
+                  {tHero('guests')}
                 </label>
                 <div className="relative">
                   <select
@@ -403,14 +407,13 @@ function IndexContent() {
               </div>
 
               {/* Search Button */}
-              <Link
+              <button
                 onClick={onSearch}
-                href="/explore"
                 className={`w-full sm:w-auto mt-2 sm:mt-4 md:mt-0 px-8 sm:px-10 md:px-12 py-3.5 rounded-md text-white text-sm font-medium text-center transition-opacity hover:opacity-90`}
                 style={{ backgroundColor: golden }}
               >
-                Search
-              </Link>
+                {tHero('search')}
+              </button>
             </div>
           </div>
         </div>
@@ -419,7 +422,7 @@ function IndexContent() {
       {/* What's Your Best Dine Time */}
       <section className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 lg:px-14 py-6 sm:py-8 lg:py-10 w-full">
         <h2 className="text-xl sm:text-2xl lg:text-[34px] font-normal mb-6 sm:mb-8 lg:mb-10 text-center sm:text-left">
-          Whats Your Best Dine Time!
+          {tDineTime('title')}
         </h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
           {timeCategories.map((category, index) => (
@@ -448,13 +451,13 @@ function IndexContent() {
       <section className="max-w-[1440px] mx-auto py-6 sm:py-8 lg:py-10 w-full">
         <div className="px-3 sm:px-4 md:px-6 lg:px-16 flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 sm:mb-6 gap-2 sm:gap-0">
           <h2 className="text-xl sm:text-2xl lg:text-[34px] font-normal">
-            Book for dinner tonight in Adelaide
+            {tDinner('title')}
           </h2>
           <Link
             href="#"
             className="text-white/75 text-sm sm:text-base lg:text-xl font-medium"
           >
-            View all
+            {tDinner('view_all')}
           </Link>
         </div>
 
@@ -495,7 +498,7 @@ function IndexContent() {
           <button
             aria-label="Previous"
             onClick={scrollPrev}
-            className="absolute -left-4 sm:-left-6 lg:-left-8 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
+            className="absolute -left-2 sm:-left-4 lg:-left-6 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
             style={{ backgroundColor: "rgba(14, 26, 43, 0.95)" }}
           >
             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -515,10 +518,10 @@ function IndexContent() {
       <section className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 lg:px-14 py-6 sm:py-8 lg:py-10 w-full">
         <div className="mb-6 sm:mb-8 text-center sm:text-left">
           <h2 className="text-xl sm:text-2xl lg:text-[34px] font-normal mb-2">
-            How it works
+            {tHowItWorks('title')}
           </h2>
           <p className="text-white/80 text-sm sm:text-base font-medium px-4 sm:px-0">
-            Simple Secure and instant venue booking in just 4 steps
+            {tHowItWorks('subtitle')}
           </p>
         </div>
 
@@ -540,11 +543,10 @@ function IndexContent() {
       <section className="max-w-[1440px] mx-auto px-4 lg:px-14 py-8 lg:py-10">
         <div className="mb-8 lg:mb-10">
           <h2 className="text-2xl lg:text-[34px] font-normal mb-2">
-            Top Restaurant This Week
+            {tTopRestaurants('title')}
           </h2>
           <p className="text-white/50 text-base font-medium">
-            Explore whats popular with other diners with these lists, updated
-            weekly.
+            {tTopRestaurants('subtitle')}
           </p>
         </div>
 
@@ -552,7 +554,7 @@ function IndexContent() {
           {[1, 2, 3].map((col) => (
             <div key={col} className="flex flex-col gap-3">
               <h3 className="text-white text-xl font-medium mb-2">
-                Top Booked
+                {tTopRestaurants('top_booked')}
               </h3>
               {[1, 2, 3, 4, 5].map((item) => (
                 <div key={item}>
@@ -600,7 +602,7 @@ function IndexContent() {
                 </div>
               ))}
               <Link href="#" className="text-white text-xs">
-                View all
+                {tTopRestaurants('view_all')}
               </Link>
             </div>
           ))}
@@ -610,7 +612,7 @@ function IndexContent() {
       {/* Latest Reviews */}
       <section className="max-w-[1440px] mx-auto px-4 lg:px-16 py-8 lg:py-10">
         <h2 className="text-2xl lg:text-[34px] font-normal text-white mb-8 lg:mb-12">
-          Latest reviews
+          {tReviews('title')}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12">
@@ -631,24 +633,24 @@ function IndexContent() {
               </div>
               <div>
                 <h3 className="text-white text-2xl font-bold mb-1">
-                  Review title
+                  {tReviews('review_title')}
                 </h3>
-                <p className="text-white text-base">Review body</p>
+                <p className="text-white text-base">{tReviews('review_body')}</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-full bg-gray-400"></div>
                 <div className="flex-1">
                   <div className="text-[#757575] text-base font-bold">
-                    Reviewer name
+                    {tReviews('reviewer_name')}
                   </div>
-                  <div className="text-[#B3B3B3] text-base">Date</div>
+                  <div className="text-[#B3B3B3] text-base">{tReviews('date')}</div>
                 </div>
               </div>
               <div>
                 <div className="text-[#757575] text-base font-bold">
-                  Restaurant Name
+                  {tReviews('restaurant_name')}
                 </div>
-                <div className="text-[#B3B3B3] text-base">Street Name</div>
+                <div className="text-[#B3B3B3] text-base">{tReviews('street_name')}</div>
               </div>
             </div>
           ))}
@@ -659,23 +661,23 @@ function IndexContent() {
       <section className="max-w-[1440px] mx-auto px-4 lg:px-14 py-8 lg:py-10 text-center">
         <div className="mb-8">
           <h2 className="text-2xl lg:text-[34px] font-normal mb-2">
-            Ask for Suggestion
+            {tSuggestion('title')}
           </h2>
           <p className="text-white/80 text-base font-medium">
-            Cant decide where to go? Let us help you!
+            {tSuggestion('subtitle')}
           </p>
         </div>
         <div className="max-w-xl mx-auto flex flex-col sm:flex-row gap-4">
           <input
             type="text"
-            placeholder="Enter your preferences (e.g., 'romantic Italian with a view')"
+            placeholder={tSuggestion('placeholder')}
             className="flex-grow bg-transparent border border-white rounded-md p-3 text-white placeholder-white/50"
           />
           <button
             className={`w-full sm:w-auto px-8 py-3.5 rounded-md text-white text-sm font-medium`}
             style={{ backgroundColor: golden }}
           >
-            Get Suggestion
+            {tSuggestion('get_suggestion')}
           </button>
         </div>
       </section>
@@ -684,13 +686,13 @@ function IndexContent() {
       <section className="max-w-[1440px] mx-auto py-8 lg:py-10">
         <div className="px-4 lg:px-16 flex justify-between items-end mb-6">
           <h2 className="text-2xl lg:text-[34px] font-normal">
-            Discover Cuisines
+            {tCuisines('title')}
           </h2>
           <Link
             href="#"
             className="text-white/75 text-base lg:text-xl font-medium"
           >
-            View all
+            {tCuisines('view_all')}
           </Link>
         </div>
 
@@ -724,7 +726,7 @@ function IndexContent() {
           <button
             onClick={scrollCuisinePrev}
             aria-label="Previous Cuisine"
-            className="absolute -left-4 sm:-left-6 lg:-left-8 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
+            className="absolute -left-2 sm:-left-4 lg:-left-6 top-1/2 -translate-y-1/2 w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] lg:w-[52px] lg:h-[52px] rounded-full border-2 border-white/80 bg-gradient-to-b from-[rgba(14,26,43,0.9)] to-[rgba(33,60,98,0.9)] backdrop-blur-sm hover:border-white hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg z-10"
             style={{ backgroundColor: "rgba(14, 26, 43, 0.95)" }}
           >
             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -744,10 +746,10 @@ function IndexContent() {
       <section className="max-w-[1440px] mx-auto px-4 lg:px-14 py-8 lg:py-10">
         <div className="mb-8 lg:mb-12">
           <h2 className="text-white text-2xl lg:text-[34px] font-normal mb-2">
-            FAQ
+            {tFAQ('title')}
           </h2>
           <p className="text-white/75 text-base font-medium">
-            You Got Questions, We Got Answers
+            {tFAQ('subtitle')}
           </p>
         </div>
 
@@ -795,24 +797,23 @@ function IndexContent() {
       <section className="max-w-[1440px] mx-auto px-4 lg:px-14 py-12 lg:py-16 text-center">
         <div className="mb-8">
           <h2 className="text-2xl lg:text-[34px] font-normal mb-2">
-            Join Our Table
+            {tNewsletter('title')}
           </h2>
           <p className="text-white/80 text-base font-medium">
-            Subscribe to our newsletter for the latest updates and exclusive
-            offers.
+            {tNewsletter('subtitle')}
           </p>
         </div>
         <div className="max-w-xl mx-auto flex flex-col sm:flex-row gap-4">
           <input
             type="email"
-            placeholder="Enter your email"
+            placeholder={tNewsletter('placeholder')}
             className="flex-grow bg-transparent border border-white rounded-md p-3 text-white placeholder-white/50"
           />
           <button
             className={`w-full sm:w-auto px-8 py-3.5 rounded-md text-white text-sm font-medium`}
             style={{ backgroundColor: golden }}
           >
-            Subscribe
+            {tNewsletter('subscribe')}
           </button>
         </div>
       </section>

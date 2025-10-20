@@ -5,6 +5,7 @@ import * as React from "react";
 import Link from "next/link";
 import { ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 // Mock data (omitted for brevity)
 const mockMetroRegions = [
@@ -37,6 +38,9 @@ export function LocationSearchPopover({
 }: LocationSearchPopoverProps) {
   const golden = "#D4A853";
   const [selectedMetro, setSelectedMetro] = React.useState(mockMetroRegions[0]);
+  
+  // Translation hook
+  const t = useTranslations('location_popover');
 
   const handleSelect = (regionName: string) => {
     onSelectLocation(regionName);
@@ -75,7 +79,7 @@ export function LocationSearchPopover({
           {/* Header */}
           <div className="p-4 border-b border-gray-700 flex-row items-center justify-between flex">
             <h2 className="text-white text-xl font-semibold">
-              Select Location
+              {t('select_location')}
             </h2>
             <button
               onClick={onClose}
@@ -91,7 +95,7 @@ export function LocationSearchPopover({
               className="w-1/3 border-r border-gray-700 overflow-y-auto"
               style={{ maxHeight: contentMaxHeight }}
             >
-              <div className="p-2 text-gray-400 font-bold text-sm">Metro</div>
+              <div className="p-2 text-gray-400 font-bold text-sm">{t('metro')}</div>
               {mockMetroRegions.map((metro) => (
                 <div
                   key={metro.name}
@@ -117,7 +121,7 @@ export function LocationSearchPopover({
                   className="text-[#D4A853] text-sm hover:underline"
                   style={{ color: golden }}
                 >
-                  Full list of Metros
+                  {t('full_list')}
                 </Link>
               </div>
             </div>
@@ -127,7 +131,7 @@ export function LocationSearchPopover({
               className="w-2/3 overflow-y-auto"
               style={{ maxHeight: contentMaxHeight }}
             >
-              <div className="p-2 text-gray-400 font-bold text-sm">Region</div>
+              <div className="p-2 text-gray-400 font-bold text-sm">{t('region')}</div>
               {selectedMetro.regions.map((region) => (
                 <div
                   key={region}

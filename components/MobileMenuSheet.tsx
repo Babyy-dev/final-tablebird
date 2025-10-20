@@ -3,6 +3,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   Sheet,
   SheetContent,
@@ -40,12 +41,16 @@ export function MobileMenuSheet({
   onLocationClick,
 }: MobileMenuSheetProps) {
   const golden = "#D4A853";
+  
+  // Translation hooks
+  const t = useTranslations('mobile_menu');
+  const tHeader = useTranslations('header');
 
   const newNavLinks = [
-    { name: "Restaurants", href: "/Restaurants", icon: Utensils },
-    { name: "Bars", href: "/Bars", icon: GlassWater },
-    { name: "Clubs", href: "/Clubs", icon: Star },
-    { name: "Favourites", href: "/Favourites", icon: Heart },
+    { name: tHeader('restaurants'), href: "/Restaurants", icon: Utensils },
+    { name: tHeader('bars'), href: "/Bars", icon: GlassWater },
+    { name: tHeader('clubs'), href: "/Clubs", icon: Star },
+    { name: tHeader('favourites'), href: "/Favourites", icon: Heart },
   ];
 
   return (
@@ -57,7 +62,7 @@ export function MobileMenuSheet({
       >
         <SheetHeader className="p-4 border-b border-gray-700">
           <SheetTitle className="text-white text-xl">
-            Account & Navigation
+            {t('title')}
           </SheetTitle>
         </SheetHeader>
 
@@ -70,7 +75,7 @@ export function MobileMenuSheet({
                 variant="outline"
               >
                 <LogIn className="w-5 h-5" />
-                Login
+                {tHeader('login')}
               </Button>
             </Link>
             <Link href="/Register" onClick={onClose}>
@@ -80,7 +85,7 @@ export function MobileMenuSheet({
                 variant="default"
               >
                 <UserPlus className="w-5 h-5" />
-                Register
+                {tHeader('register')}
               </Button>
             </Link>
           </div>
@@ -92,14 +97,14 @@ export function MobileMenuSheet({
               variant="outline"
             >
               <Search className="w-5 h-5" />
-              Search
+              {tHeader('search')}
             </Button>
           </Link>
 
           {/* New Navigation Links Section for the added tabs */}
           <div className="pt-4 space-y-1 border-t border-gray-700">
             <h3 className="text-sm font-semibold text-gray-400 mb-2">
-              Explore
+              {t('explore')}
             </h3>
             {newNavLinks.map((link) => (
               <Link
@@ -130,7 +135,7 @@ export function MobileMenuSheet({
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-white" />
               <div className="flex flex-col items-start">
-                <p className="text-xs text-white/70 leading-none">Location</p>
+                <p className="text-xs text-white/70 leading-none">{tHeader('location')}</p>
                 <p className="text-sm font-medium text-white leading-none">
                   {currentLocation}
                 </p>
@@ -141,7 +146,7 @@ export function MobileMenuSheet({
 
           {/* Language Toggle */}
           <div className="border border-gray-700 rounded-md p-3 flex justify-between items-center bg-[#1A2E4C]">
-            <span className="text-white">Language</span>
+            <span className="text-white">{t('language')}</span>
             <button
               onClick={() => setLang(lang === "EN" ? "BG" : "EN")}
               // role="switch"
@@ -176,7 +181,7 @@ export function MobileMenuSheet({
             href="/admin/analytics"
             className="pt-4 text-gray-400 hover:text-red-400 text-sm"
           >
-            Admin/Manager Dashboard
+            {t('admin_dashboard')}
           </Link>
         </div>
       </SheetContent>

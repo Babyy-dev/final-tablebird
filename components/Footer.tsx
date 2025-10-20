@@ -1,10 +1,13 @@
 // components/Footer.tsx
+"use client";
+
 import Link from "next/link";
 import { Twitter, Instagram, Facebook, Linkedin } from "lucide-react";
 import React from "react";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
-  const t = (key: string) => key; // Mock translation function
+  const t = useTranslations('footer');
 
   const navGroups = [
     {

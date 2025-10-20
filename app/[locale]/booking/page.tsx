@@ -2,8 +2,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useBooking } from "@/context/BookingContext";
+import { useTranslations } from "next-intl";
 import {
   Calendar,
   Clock,
@@ -20,8 +21,11 @@ import Image from "next/image";
 
 export default function BookingPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const { bookingData, setBookingData } = useBooking();
+  const t = useTranslations('booking');
   const golden = "#D4A853";
+  const [lang, setLang] = useState<"EN" | "BG">("EN");
   const [selectedSeating, setSelectedSeating] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("+49 125 456 3");
   const [occasion, setOccasion] = useState("");
@@ -29,6 +33,12 @@ export default function BookingPage() {
   const [emailOffers, setEmailOffers] = useState(false);
   const [textUpdates, setTextUpdates] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(292); // 4:52 in seconds
+  
+  // Initialize language state based on pathname - default to English
+  useEffect(() => {
+    const currentLang = pathname.startsWith('/bg') ? 'BG' : 'EN';
+    setLang(currentLang);
+  }, [pathname]);
 
   useEffect(() => {
     // If user has navigated directly here without selecting a destination, redirect.
@@ -56,10 +66,10 @@ export default function BookingPage() {
   };
 
   const seatingOptions = [
-    { id: "standard", label: "Standard" },
-    { id: "outdoor", label: "Outdoor" },
-    { id: "rooftop", label: "Rooftop" },
-    { id: "bar-lounge", label: "Bar lounge" },
+    { id: "standard", label: t('standard') },
+    { id: "outdoor", label: t('outdoor') },
+    { id: "rooftop", label: t('rooftop') },
+    { id: "bar-lounge", label: t('bar_lounge') },
   ];
 
   const handleCompleteBooking = () => {
@@ -106,7 +116,7 @@ export default function BookingPage() {
       />
 
       <div className="relative z-10">
-        <Header lang="EN" setLang={() => {}} />
+        <Header lang={lang} setLang={setLang} />
 
         {/* Main Content */}
         <main className="max-w-[1320px] mx-auto px-4 lg:px-[60px] mt-8 lg:mt-12">
@@ -130,7 +140,7 @@ export default function BookingPage() {
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-5 h-5 text-white" />
                       <span className="text-white text-sm tracking-[0.035px]">
-                        Today
+                        {t('today')}
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -142,7 +152,7 @@ export default function BookingPage() {
                     <div className="flex items-center gap-1.5">
                       <Users className="w-5 h-5 text-white" />
                       <span className="text-white text-sm tracking-[0.035px]">
-                        {bookingData.guests} people
+                        {bookingData.guests} {t('people')}
                       </span>
                     </div>
                   </div>
@@ -155,7 +165,7 @@ export default function BookingPage() {
                 style={{ backgroundColor: "#A0522D" }}
               >
                 <span className="text-white text-base tracking-[0.08px]">
-                  We are holding this table for you for{" "}
+                  {t('holding_table')}{" "}
                   <span className="font-medium">
                     {formatTime(timeRemaining)}
                   </span>
@@ -175,7 +185,7 @@ export default function BookingPage() {
               {/* Available Seating Options */}
               <div className="space-y-6">
                 <h2 className="text-white text-xl font-medium tracking-[0.03px]">
-                  Available seating options
+                  {t('available_seating')}
                 </h2>
                 <div className="space-y-4">
                   {seatingOptions.map((option) => (

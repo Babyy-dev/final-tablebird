@@ -2,6 +2,7 @@
 
 import { Bookmark, Star } from "lucide-react";
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface RestaurantCardProps {
   name: string;
@@ -49,6 +50,9 @@ export function RestaurantCard({
 }: RestaurantCardProps) {
   const gold = "#D4A853";
   const [isSaved, setIsSaved] = useState(false);
+  
+  // Translation hook
+  const t = useTranslations('restaurant_card');
 
   const handleSaveClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click when clicking bookmark
@@ -56,12 +60,13 @@ export function RestaurantCard({
   };
 
   return (
-    <div
-      className={`relative w-full min-w-[280px] sm:min-w-[315px] max-w-[340px] flex-shrink-0 snap-center ${
-        featured ? "h-[300px] sm:h-[334px]" : "h-[280px] sm:h-[307px]"
-      } rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-all duration-500 ${className} mx-auto`}
-      style={{ border: `1.5px solid ${gold}` }}
-    >
+    <div className="flex justify-center w-full">
+      <div
+        className={`relative w-full min-w-[280px] sm:min-w-[315px] max-w-[340px] flex-shrink-0 snap-center ${
+          featured ? "h-[300px] sm:h-[334px]" : "h-[280px] sm:h-[307px]"
+        } rounded-t-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-all duration-500 ${className}`}
+        style={{ border: `1.5px solid ${gold}` }}
+      >
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
@@ -71,11 +76,11 @@ export function RestaurantCard({
       {/* Soft Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-[#213C62]/70 to-transparent" />
 
-      {/* Glass Info Panel */}
-      <div className={`absolute rounded-lg border border-white/10 bg-[rgba(6,6,6,0.6)] backdrop-blur-md p-3 sm:p-4 z-10 ${
+      {/* Glass Info Panel - Centered and touching bottom */}
+      <div className={`absolute border border-white/10 bg-[rgba(6,6,6,0.6)] backdrop-blur-md p-3 sm:p-4 z-10 ${
         isExplorePage 
-          ? "right-0 top-1/2 -translate-y-1/2 w-[280px] sm:w-[300px]" 
-          : "left-2 sm:left-4 right-2 sm:right-auto bottom-0 w-auto sm:w-[280px]"
+          ? "left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-[280px] sm:w-[300px] rounded-lg" 
+          : "left-1/2 -translate-x-1/2 bottom-0 w-[calc(100%-2rem)] rounded-t-lg"
       }`}>
         {/* Top Section */}
         <div className="flex items-start justify-between mb-2">
@@ -134,7 +139,7 @@ export function RestaurantCard({
             {cuisine} {priceRange} • {location}
           </p>
           <p className="text-white/70 text-xs mt-1">
-            Booked {bookedCount} times today
+            {t('booked_times', {count: bookedCount})} times today
           </p>
         </div>
 
@@ -153,11 +158,12 @@ export function RestaurantCard({
 
       {/* Subtle Highlight Frame */}
       <div
-        className="absolute inset-0 pointer-events-none rounded-2xl"
+        className="absolute inset-0 pointer-events-none rounded-t-2xl"
         style={{
           boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)",
         }}
       />
+      </div>
     </div>
   );
 }

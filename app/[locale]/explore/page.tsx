@@ -9,6 +9,8 @@ import {
   useEffect,
   ChangeEvent,
 } from "react";
+import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { RestaurantCard } from "@/components/RestaurantCard";
@@ -33,9 +35,11 @@ function SearchParamsLoader({ children }: { children: React.ReactNode }) {
 function ExplorePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  // const golden = "#D4A853";
-  // const deepBlue = "#0E1A2B";
+  const pathname = usePathname();
   const navyDark = "#0E1A2B";
+  
+  // Translation hooks
+  const t = useTranslations('explore');
 
   // State initialization
   const [time, setTime] = useState(searchParams.get("time") || "19:00");
@@ -46,6 +50,12 @@ function ExplorePageContent() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [lang, setLang] = useState<"EN" | "BG">("EN");
   const [showDateDropdown, setShowDateDropdown] = useState(false);
+  
+  // Initialize language state based on pathname - default to English
+  useEffect(() => {
+    const currentLang = pathname.startsWith('/bg') ? 'BG' : 'EN';
+    setLang(currentLang);
+  }, [pathname]);
   // const [isMapVisible, setIsMapVisible] = useState(false); // Assuming you kept this from the previous fix
 
   const timeRef = useRef<HTMLSelectElement>(null);
@@ -114,16 +124,18 @@ function ExplorePageContent() {
 
   // FIX: New handler for card click to navigate
   const handleCardClick = (id: number) => {
-    router.push(`/venue/${id}`);
+    const currentLocale = pathname.startsWith('/bg') ? 'bg' : 'en';
+    const venuePath = currentLocale === 'en' ? `/venue/${id}` : `/bg/venue/${id}`;
+    router.push(venuePath);
   };
 
   // Mock data for filter buttons
   const filterCategories = [
-    { icon: UtensilsCrossed, label: "Restaurant", active: true },
-    { icon: Wine, label: "Bars", active: false },
-    { icon: Disc, label: "Clubs", active: false },
+    { icon: UtensilsCrossed, label: t('restaurant'), active: true },
+    { icon: Wine, label: t('bars'), active: false },
+    { icon: Disc, label: t('clubs'), active: false },
   ];
-  const filterSorts = ["Tops", "Populars"];
+  const filterSorts = [t('tops'), t('populars')];
 
   // Mock the countdown timer for consistency
   const countdown = "19:59:43";
@@ -144,7 +156,7 @@ function ExplorePageContent() {
         <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-[60px]">
           {/* Title Row */}
           <h1 className="text-gray-400 text-base md:text-[20px] mb-6 md:mb-8 flex items-baseline gap-2">
-            <span>Available now in</span>
+            <span>{t('available_now_in')}</span>
             <span className="text-xl md:text-[34px] text-white">Sofia</span>
           </h1>
 
@@ -156,7 +168,7 @@ function ExplorePageContent() {
               {/* Time Input */}
               <div className="flex flex-col flex-1 min-w-[20%]">
                 <span className="text-[10px] text-white/50 tracking-[0.15px] mb-1">
-                  Time
+                  {t('time')}
                 </span>
                 <div className="relative inline-flex items-start gap-0">
                   <select
@@ -200,7 +212,7 @@ function ExplorePageContent() {
                 ref={dateBoxRef}
               >
                 <span className="text-[10px] text-white/50 tracking-[0.15px] mb-1">
-                  Date
+                  {t('date')}
                 </span>
                 <div className="relative inline-flex items-center gap-1">
                   <button
@@ -249,7 +261,7 @@ function ExplorePageContent() {
               {/* Guests Input */}
               <div className="flex flex-col flex-1 min-w-[30%]">
                 <span className="text-[10px] text-white/50 tracking-[0.15px] mb-1">
-                  Guests
+                  {t('guests')}
                 </span>
                 <div className="relative inline-flex items-center gap-1">
                   <select
@@ -372,6 +384,7 @@ export default function ExplorePage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-[#0E1A2B] flex items-center justify-center text-white text-xl">
+          {/* Note: Can't use translations in fallback since it's outside provider context */}
           Loading Map and Filters...
         </div>
       }

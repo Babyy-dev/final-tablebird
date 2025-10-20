@@ -2,7 +2,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { useBooking } from "@/context/BookingContext";
@@ -24,10 +25,18 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function ConfirmationPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const { userBookings, user } = useBooking();
+  const t = useTranslations('confirmation');
   const golden = "#D4A853";
   const navyDark = "#0E1A2B";
   const [lang, setLang] = useState<"EN" | "BG">("EN");
+  
+  // Initialize language state based on pathname - default to English
+  useEffect(() => {
+    const currentLang = pathname.startsWith('/bg') ? 'BG' : 'EN';
+    setLang(currentLang);
+  }, [pathname]);
 
   // Access the latest booking from userBookings for display
   const latestBooking = useMemo(() => {
@@ -122,10 +131,10 @@ export default function ConfirmationPage() {
                   </svg>
                 </div>
                 <h1 className="text-white text-5xl font-normal">
-                  Booking Confirmed
+                  {t('booking_confirmed')}
                 </h1>
                 <p className="text-white text-sm tracking-[0.035px]">
-                  Confirmation Booking code: {bookingCode}
+                  {t('confirmation_code')}: {bookingCode}
                 </p>
               </div>
 
@@ -160,7 +169,7 @@ export default function ConfirmationPage() {
                           </div>
                           <div className="flex items-center gap-1.5 text-white text-sm">
                             <Users className="w-5 h-5" />
-                            <span>{booking.guests} people</span>
+                            <span>{booking.guests} {t('people')}</span>
                           </div>
                           <div className="flex items-center gap-1.5 text-white text-sm">
                             <DollarSign className="w-5 h-5" />
@@ -183,16 +192,16 @@ export default function ConfirmationPage() {
                     {/* Action Buttons */}
                     <div className="flex items-center gap-2.5">
                       <Button className="px-2.5 py-1 rounded-md border border-white bg-red-600/60 text-white/95 text-sm font-medium hover:bg-red-600/80 transition-colors shadow-lg">
-                        Cancel
+                        {t('cancel')}
                       </Button>
                       <Button className="px-2.5 py-1 rounded-md border border-white bg-white/10 text-white/95 text-sm font-medium hover:bg-white/20 transition-colors shadow-lg">
-                        Modify
+                        {t('modify')}
                       </Button>
                       <Button
                         className="px-2.5 py-1 rounded-md border border-white bg-golden text-white/95 text-sm font-medium hover:bg-golden/90 transition-colors shadow-lg"
                         style={{ backgroundColor: golden, color: navyDark }}
                       >
-                        Add to Calendar
+                        {t('add_to_calendar')}
                       </Button>
                     </div>
                   </div>
