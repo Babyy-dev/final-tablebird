@@ -43,7 +43,6 @@ function IndexContent() {
   const navyDark = "#0E1A2B";
   
   // Translation hooks
-  const t = useTranslations('home');
   const tHero = useTranslations('home.hero');
   const tDineTime = useTranslations('home.dine_time');
   const tDinner = useTranslations('home.dinner_section');

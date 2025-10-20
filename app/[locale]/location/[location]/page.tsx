@@ -53,13 +53,13 @@ const restaurantData = [
 ];
 
 interface LocationPageProps {
-  params: {
+  params: Promise<{
     location: string;
-  };
+  }>;
 }
 
-export default function LocationPage({ params }: LocationPageProps) {
-  const { location } = params;
+export default async function LocationPage({ params }: LocationPageProps) {
+  const { location } = await params;
   const router = useRouter();
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [zoom, setZoom] = useState(1);
