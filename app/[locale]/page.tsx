@@ -54,14 +54,13 @@ function IndexContent() {
   const tFAQ = useTranslations('home.faq');
   const tNewsletter = useTranslations('home.newsletter');
 
-  // Header state - sync with current locale
-  const [lang, setLang] = useState<"EN" | "BG">("EN");
-  
-  // Initialize language state based on pathname - default to English
-  useEffect(() => {
-    const currentLang = typeof window !== 'undefined' && window.location.pathname.startsWith('/bg') ? 'BG' : 'EN';
-    setLang(currentLang);
-  }, []);
+  // Header state - initialize based on URL
+  const [lang, setLang] = useState<"EN" | "BG">(() => {
+    if (typeof window !== 'undefined') {
+      return window.location.pathname.startsWith('/bg') ? 'BG' : 'EN';
+    }
+    return 'EN';
+  });
 
   // Booking box state initialization
   const uniqueLocations = useMemo(

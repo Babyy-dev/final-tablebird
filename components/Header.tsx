@@ -32,7 +32,7 @@ export default function Header({
   const [currentLocation, setCurrentLocation] = useState("Sofia");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Sync language state with current pathname - ensure English is default
+  // Initialize language state based on pathname
   useEffect(() => {
     const currentLang = pathname.startsWith('/bg') ? 'BG' : 'EN';
     setLang(currentLang);
@@ -71,9 +71,8 @@ export default function Header({
       }
     }
     
-    // Update state and navigate
-    setLang(targetLanguage);
-    router.push(newPath);
+    // Use window.location.href for immediate navigation without state conflicts
+    window.location.href = newPath;
   };
 
   const bgColor = isTransparent

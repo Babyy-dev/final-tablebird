@@ -3,6 +3,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Sheet,
@@ -41,16 +42,49 @@ export function MobileMenuSheet({
   onLocationClick,
 }: MobileMenuSheetProps) {
   const golden = "#D4A853";
+  const router = useRouter();
+  const pathname = usePathname();
   
   // Translation hooks
   const t = useTranslations('mobile_menu');
   const tHeader = useTranslations('header');
 
+  const handleLanguageSwitch = () => {
+    // Determine current and target language
+    const isCurrentlyBulgarian = pathname.startsWith('/bg');
+    const targetLanguage = isCurrentlyBulgarian ? 'EN' : 'BG';
+    
+    // Create new path
+    let newPath;
+    if (isCurrentlyBulgarian) {
+      // Switch from Bulgarian to English (remove /bg prefix)
+      if (pathname === '/bg') {
+        newPath = '/';
+      } else {
+        newPath = pathname.substring(3); // Remove '/bg'
+      }
+    } else {
+      // Switch from English to Bulgarian (add /bg prefix)
+      if (pathname === '/') {
+        newPath = '/bg';
+      } else {
+        newPath = `/bg${pathname}`;
+      }
+    }
+    
+    // Close menu and navigate
+    onClose();
+    // Use window.location.href for immediate navigation without state conflicts
+    window.location.href = newPath;
+  };
+
+  const currentLocalePrefix = pathname.startsWith('/bg') ? '/bg' : '';
+  
   const newNavLinks = [
-    { name: tHeader('restaurants'), href: "/Restaurants", icon: Utensils },
-    { name: tHeader('bars'), href: "/Bars", icon: GlassWater },
-    { name: tHeader('clubs'), href: "/Clubs", icon: Star },
-    { name: tHeader('favourites'), href: "/Favourites", icon: Heart },
+    { name: tHeader('restaurants'), href: `${currentLocalePrefix}/Restaurants`, icon: Utensils },
+    { name: tHeader('bars'), href: `${currentLocalePrefix}/Bars`, icon: GlassWater },
+    { name: tHeader('clubs'), href: `${currentLocalePrefix}/Clubs`, icon: Star },
+    { name: tHeader('favourites'), href: `${currentLocalePrefix}/Favourites`, icon: Heart },
   ];
 
   return (
@@ -69,7 +103,7 @@ export function MobileMenuSheet({
         <div className="flex flex-col p-4 space-y-4">
           {/* Login/Register Buttons */}
           <div className="flex flex-col space-y-2">
-            <Link href="/Login" onClick={onClose}>
+            <Link href={`${currentLocalePrefix}/Login`} onClick={onClose}>
               <Button
                 className="w-full justify-start gap-2 bg-[#1A2E4C] hover:bg-[#2A3E5C] text-white"
                 variant="outline"
@@ -78,7 +112,7 @@ export function MobileMenuSheet({
                 {tHeader('login')}
               </Button>
             </Link>
-            <Link href="/Register" onClick={onClose}>
+            <Link href={`${currentLocalePrefix}/Register`} onClick={onClose}>
               <Button
                 className="w-full justify-start gap-2"
                 style={{ backgroundColor: golden, color: "#0A1E3C" }}
@@ -91,7 +125,7 @@ export function MobileMenuSheet({
           </div>
 
           {/* Search Button */}
-          <Link href="/explore" onClick={onClose}>
+          <Link href={`${currentLocalePrefix}/explore`} onClick={onClose}>
             <Button
               className="w-full justify-start gap-2 bg-[#1A2E4C] hover:bg-[#2A3E5C] text-white border border-gray-700"
               variant="outline"
@@ -148,7 +182,7 @@ export function MobileMenuSheet({
           <div className="border border-gray-700 rounded-md p-3 flex justify-between items-center bg-[#1A2E4C]">
             <span className="text-white">{t('language')}</span>
             <button
-              onClick={() => setLang(lang === "EN" ? "BG" : "EN")}
+              onClick={handleLanguageSwitch}
               // role="switch"
               className="relative w-[70px] h-[35px] rounded-[50px] border border-white/50 bg-black/20 shadow-md cursor-pointer transition-colors"
               style={{ backgroundColor: "rgba(14, 26, 43, 0.4)" }}
@@ -178,7 +212,7 @@ export function MobileMenuSheet({
 
           {/* Placeholder/Admin link */}
           <Link
-            href="/admin/analytics"
+            href={`${currentLocalePrefix}/admin/analytics`}
             className="pt-4 text-gray-400 hover:text-red-400 text-sm"
           >
             {t('admin_dashboard')}
