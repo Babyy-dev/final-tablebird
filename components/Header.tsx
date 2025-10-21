@@ -33,6 +33,7 @@ export default function Header({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Get current language directly from pathname (English is default)
+  // Only Bulgarian if pathname explicitly starts with '/bg'
   const isCurrentlyBulgarian = pathname.startsWith('/bg');
   const currentLang = isCurrentlyBulgarian ? 'BG' : 'EN';
 

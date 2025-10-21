@@ -1,14 +1,17 @@
 import createMiddleware from 'next-intl/middleware';
- 
+
 export default createMiddleware({
-  // A list of all locales that are supported
+  // English first as default locale
   locales: ['en', 'bg'],
  
-  // Used when no locale matches - ensure English is default
+  // English is the default locale (no prefix needed)
   defaultLocale: 'en',
   
-  // Don't add locale prefix for default locale (English)
-  localePrefix: 'as-needed'
+  // Only add prefix for non-default locales
+  localePrefix: 'as-needed',
+  
+  // Disable automatic browser language detection to force English default
+  localeDetection: false
 });
  
 export const config = {
