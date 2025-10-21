@@ -55,7 +55,13 @@ export function MobileMenuSheet({
     
     if (isCurrentlyBulgarian) {
       // Switch from Bulgarian to English (remove /bg prefix)
-      newPath = pathname === '/bg' ? '/' : pathname.substring(3);
+      if (pathname === '/bg') {
+        newPath = '/';
+      } else if (pathname.startsWith('/bg/')) {
+        newPath = pathname.substring(3); // Remove '/bg'
+      } else {
+        newPath = '/'; // Fallback
+      }
     } else {
       // Switch from English to Bulgarian (add /bg prefix)  
       newPath = pathname === '/' ? '/bg' : `/bg${pathname}`;
@@ -63,7 +69,7 @@ export function MobileMenuSheet({
     
     // Close menu and navigate
     onClose();
-    window.location.href = newPath;
+    window.location.assign(newPath);
   };
 
   const isCurrentlyBulgarian = pathname.startsWith('/bg');
