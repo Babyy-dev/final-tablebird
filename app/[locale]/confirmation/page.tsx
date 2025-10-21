@@ -30,13 +30,7 @@ export default function ConfirmationPage() {
   const t = useTranslations('confirmation');
   const golden = "#D4A853";
   const navyDark = "#0E1A2B";
-  const [lang, setLang] = useState<"EN" | "BG">("EN");
-  
-  // Initialize language state based on pathname - default to English
-  useEffect(() => {
-    const currentLang = pathname.startsWith('/bg') ? 'BG' : 'EN';
-    setLang(currentLang);
-  }, [pathname]);
+  const [lang, setLang] = useState<"EN" | "BG">("EN"); // Keep for component interface
 
   // Access the latest booking from userBookings for display
   const latestBooking = useMemo(() => {

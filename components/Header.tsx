@@ -32,15 +32,12 @@ export default function Header({
   const [currentLocation, setCurrentLocation] = useState("Sofia");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Initialize language state based on pathname
-  useEffect(() => {
-    const currentLang = pathname.startsWith('/bg') ? 'BG' : 'EN';
-    setLang(currentLang);
-  }, [pathname, setLang]);
+  // Get current language directly from pathname (English is default)
+  const isCurrentlyBulgarian = pathname.startsWith('/bg');
+  const currentLang = isCurrentlyBulgarian ? 'BG' : 'EN';
 
   const handleSearchClick = () => {
-    const currentLocale = pathname.startsWith('/bg') ? 'bg' : 'en';
-    const explorePath = currentLocale === 'en' ? '/explore' : '/bg/explore';
+    const explorePath = isCurrentlyBulgarian ? '/bg/explore' : '/explore';
     router.push(explorePath);
   };
 
@@ -49,29 +46,16 @@ export default function Header({
   };
 
   const handleLanguageSwitch = () => {
-    // Determine current and target language
-    const isCurrentlyBulgarian = pathname.startsWith('/bg');
-    const targetLanguage = isCurrentlyBulgarian ? 'EN' : 'BG';
-    
-    // Create new path
     let newPath;
+    
     if (isCurrentlyBulgarian) {
       // Switch from Bulgarian to English (remove /bg prefix)
-      if (pathname === '/bg') {
-        newPath = '/';
-      } else {
-        newPath = pathname.substring(3); // Remove '/bg'
-      }
+      newPath = pathname === '/bg' ? '/' : pathname.substring(3);
     } else {
-      // Switch from English to Bulgarian (add /bg prefix)
-      if (pathname === '/') {
-        newPath = '/bg';
-      } else {
-        newPath = `/bg${pathname}`;
-      }
+      // Switch from English to Bulgarian (add /bg prefix)  
+      newPath = pathname === '/' ? '/bg' : `/bg${pathname}`;
     }
     
-    // Use window.location.href for immediate navigation without state conflicts
     window.location.href = newPath;
   };
 
@@ -128,20 +112,20 @@ export default function Header({
           >
             <div
               className={`absolute top-[5px] w-[35px] h-[35px] rounded-full transition-all duration-300 ${
-                lang === "EN" ? "left-[5px]" : "left-[46px]"
+                currentLang === "EN" ? "left-[5px]" : "left-[46px]"
               }`}
               style={{ backgroundColor: golden }}
             ></div>
             <span
               className={`absolute left-[13px] top-[14px] text-sm font-medium z-10 ${
-                lang === "EN" ? "text-black" : "text-white"
+                currentLang === "EN" ? "text-black" : "text-white"
               }`}
             >
               EN
             </span>
             <span
               className={`absolute right-[13px] top-[14px] text-sm font-medium z-10 ${
-                lang === "BG" ? "text-black" : "text-white"
+                currentLang === "BG" ? "text-black" : "text-white"
               }`}
             >
               BG
@@ -219,7 +203,7 @@ export default function Header({
       <MobileMenuSheet
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
-        lang={lang}
+        lang={currentLang}
         setLang={setLang}
         currentLocation={currentLocation}
         onLocationClick={handleLocationClick}

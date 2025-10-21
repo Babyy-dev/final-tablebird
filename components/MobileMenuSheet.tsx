@@ -50,35 +50,25 @@ export function MobileMenuSheet({
   const tHeader = useTranslations('header');
 
   const handleLanguageSwitch = () => {
-    // Determine current and target language
     const isCurrentlyBulgarian = pathname.startsWith('/bg');
-    const targetLanguage = isCurrentlyBulgarian ? 'EN' : 'BG';
-    
-    // Create new path
     let newPath;
+    
     if (isCurrentlyBulgarian) {
       // Switch from Bulgarian to English (remove /bg prefix)
-      if (pathname === '/bg') {
-        newPath = '/';
-      } else {
-        newPath = pathname.substring(3); // Remove '/bg'
-      }
+      newPath = pathname === '/bg' ? '/' : pathname.substring(3);
     } else {
-      // Switch from English to Bulgarian (add /bg prefix)
-      if (pathname === '/') {
-        newPath = '/bg';
-      } else {
-        newPath = `/bg${pathname}`;
-      }
+      // Switch from English to Bulgarian (add /bg prefix)  
+      newPath = pathname === '/' ? '/bg' : `/bg${pathname}`;
     }
     
     // Close menu and navigate
     onClose();
-    // Use window.location.href for immediate navigation without state conflicts
     window.location.href = newPath;
   };
 
-  const currentLocalePrefix = pathname.startsWith('/bg') ? '/bg' : '';
+  const isCurrentlyBulgarian = pathname.startsWith('/bg');
+  const currentLocalePrefix = isCurrentlyBulgarian ? '/bg' : '';
+  const currentLang = isCurrentlyBulgarian ? 'BG' : 'EN';
   
   const newNavLinks = [
     { name: tHeader('restaurants'), href: `${currentLocalePrefix}/Restaurants`, icon: Utensils },
@@ -189,20 +179,20 @@ export function MobileMenuSheet({
             >
               <div
                 className={`absolute top-[3px] w-[29px] h-[29px] rounded-full transition-all duration-300 ${
-                  lang === "EN" ? "left-[3px]" : "left-[38px]"
+                  currentLang === "EN" ? "left-[3px]" : "left-[38px]"
                 }`}
                 style={{ backgroundColor: golden }}
               ></div>
               <span
                 className={`absolute left-[10px] top-[9px] text-xs font-medium z-10 ${
-                  lang === "EN" ? "text-black" : "text-white"
+                  currentLang === "EN" ? "text-black" : "text-white"
                 }`}
               >
                 EN
               </span>
               <span
                 className={`absolute right-[10px] top-[9px] text-xs font-medium z-10 ${
-                  lang === "BG" ? "text-black" : "text-white"
+                  currentLang === "BG" ? "text-black" : "text-white"
                 }`}
               >
                 BG

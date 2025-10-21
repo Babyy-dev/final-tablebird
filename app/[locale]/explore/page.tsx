@@ -48,14 +48,8 @@ function ExplorePageContent() {
   );
   const [guests, setGuests] = useState(Number(searchParams.get("guests")) || 7);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [lang, setLang] = useState<"EN" | "BG">("EN");
+  const [lang, setLang] = useState<"EN" | "BG">("EN"); // Keep for component interface
   const [showDateDropdown, setShowDateDropdown] = useState(false);
-  
-  // Initialize language state based on pathname - default to English
-  useEffect(() => {
-    const currentLang = pathname.startsWith('/bg') ? 'BG' : 'EN';
-    setLang(currentLang);
-  }, [pathname]);
   // const [isMapVisible, setIsMapVisible] = useState(false); // Assuming you kept this from the previous fix
 
   const timeRef = useRef<HTMLSelectElement>(null);

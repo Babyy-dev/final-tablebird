@@ -2,7 +2,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/Header";
@@ -27,10 +27,11 @@ export default function VenueDetailsPage() {
   // --- SETUP ---
   const { id } = useParams() as { id: string };
   const router = useRouter();
+  const pathname = usePathname();
   const { setBookingData } = useBooking();
   const golden = "#eec212";
   const navyDark = "#0E1A2B";
-  const [lang, setLang] = useState<"EN" | "BG">("EN");
+  const [lang, setLang] = useState<"EN" | "BG">("EN"); // Keep for component interface
 
   // --- LOCAL UI STATE ---
   const [selectedTime, setSelectedTime] = useState<string | null>("19:00");
@@ -74,7 +75,8 @@ export default function VenueDetailsPage() {
         Number(venue.price.replace("₺", "").trim()) * localBookingData.guests,
       checkIn: new Date(),
     });
-    router.push("/booking");
+    const bookingPath = pathname.startsWith('/bg') ? '/bg/booking' : '/booking';
+    router.push(bookingPath);
   };
 
   if (!venue) {
@@ -89,7 +91,7 @@ export default function VenueDetailsPage() {
       >
         <div className="text-center">
           <p className="mb-4">Venue not found.</p>
-          <Link href="/explore" className="underline" style={{ color: golden }}>
+          <Link href={pathname?.startsWith('/bg') ? '/bg/explore' : '/explore'} className="underline" style={{ color: golden }}>
             Go back to Explore
           </Link>
         </div>
@@ -136,7 +138,7 @@ export default function VenueDetailsPage() {
             <div className="flex-1 space-y-6 min-w-0">
               {/* Back Link */}
               <Link
-                href="/explore"
+                href={pathname.startsWith('/bg') ? '/bg/explore' : '/explore'}
                 className="inline-flex items-center gap-2 text-white/80 hover:text-white"
               >
                 <ArrowLeft className="w-4 h-4" /> Back to Search Results

@@ -25,7 +25,7 @@ export default function BookingPage() {
   const { bookingData, setBookingData } = useBooking();
   const t = useTranslations('booking');
   const golden = "#D4A853";
-  const [lang, setLang] = useState<"EN" | "BG">("EN");
+  const [lang, setLang] = useState<"EN" | "BG">("EN"); // Keep for component interface
   const [selectedSeating, setSelectedSeating] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("+49 125 456 3");
   const [occasion, setOccasion] = useState("");
@@ -33,12 +33,6 @@ export default function BookingPage() {
   const [emailOffers, setEmailOffers] = useState(false);
   const [textUpdates, setTextUpdates] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(292); // 4:52 in seconds
-  
-  // Initialize language state based on pathname - default to English
-  useEffect(() => {
-    const currentLang = pathname.startsWith('/bg') ? 'BG' : 'EN';
-    setLang(currentLang);
-  }, [pathname]);
 
   useEffect(() => {
     // If user has navigated directly here without selecting a destination, redirect.
